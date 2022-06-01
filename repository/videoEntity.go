@@ -13,8 +13,8 @@ type Video struct {
 	FavoriteCount int64  `gorm:"column:favorite_count"`
 	CommentCount  int64  `gorm:"column:comment_count"`
 	Title         string `gorm:"column:title;size:32"`
-	UserID        int64  `gorm:"column:user_id"`
-	IsFavorite    bool   `json:"column:is_favorite"`
+	UserId        int64  `gorm:"column:user_id"`
+	IsFavorite    bool   `gorm:"column:is_favorite"`
 }
 
 type VideoDao struct {
@@ -33,7 +33,7 @@ func (d *VideoDao) QueryByOwner(ownerId int64) []Video {
 		FavoriteCount: 0,
 		CommentCount:  0,
 		Title:         "",
-		UserID:        ownerId,
+		UserId:        ownerId,
 		IsFavorite:    false,
 	}
 	var videos []Video
@@ -49,7 +49,7 @@ func (d *VideoDao) CreateVideoRecord(userId int64, playURL string, coverURL stri
 		FavoriteCount: 0,
 		CommentCount:  0,
 		Title:         title,
-		UserID:        userId,
+		UserId:        userId,
 		IsFavorite:    false,
 	}
 	if video.Id == 0 {
@@ -62,8 +62,5 @@ func (d *VideoDao) CreateVideoRecord(userId int64, playURL string, coverURL stri
 func (d *VideoDao) QueryFeedFlow(latestTime int64) []Video {
 	var videos []Video
 	db.Order("create_time desc").Limit(MaxListLength).Find(&videos)
-	for idx, _ := range videos {
-		db.Model(&videos[idx]).Association("User").Find(&videos[idx].UserID)
-	}
 	return videos
 }

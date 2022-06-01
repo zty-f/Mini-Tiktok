@@ -53,7 +53,7 @@ func Register(c *gin.Context) {
 	var tokenSb strings.Builder
 	fmt.Fprintf(&tokenSb, "%s%s", userName, password)
 	c.JSON(http.StatusOK, RegisterResp{
-		Response: Response{2000, "注册成功！"},
+		Response: Response{0, "注册成功！"},
 		UserId:   user.Id, //不知道该怎么写了
 		Token:    tokenSb.String(),
 	})
@@ -64,11 +64,18 @@ func Login(c *gin.Context) {
 	userName := c.Query("username")
 	password := c.Query("password")
 	var user = userDaoInstance.QueryLoginInfo(userName, password)
+	if user.Id <= 0 {
+		c.JSON(http.StatusOK, RegisterResp{
+			Response: Response{StatusCode: 1,
+				StatusMsg: "用户名或密码错误！"},
+		})
+		return
+	}
 	fmt.Printf("用户正在登录：" + userName + ":" + password)
 	var tokenSb strings.Builder
 	fmt.Fprintf(&tokenSb, "%s%s", userName, password)
 	c.JSON(http.StatusOK, RegisterResp{
-		Response: Response{2001, "登录成功！"},
+		Response: Response{0, "登录成功！"},
 		UserId:   user.Id,
 		Token:    tokenSb.String(),
 	})
@@ -109,7 +116,7 @@ func UserInfo(c *gin.Context) {
 		IsFollow:      userEntity.IsFollow,
 	}
 	c.JSON(http.StatusOK, UserResp{
-		Response: Response{2003, "获取登录用户详细信息成功！"},
+		Response: Response{0, "获取登录用户详细信息成功！"},
 		User:     *loginUser,
 	})
 

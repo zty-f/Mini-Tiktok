@@ -95,7 +95,7 @@ func PublishList(c *gin.Context) {
 	for i, _ := range PublishedList {
 		PublishedList[i] = repository.Video{
 			Id:            videos[i].Id,
-			UserID:        videos[i].UserID,
+			UserId:        videos[i].UserId,
 			PlayUrl:       videos[i].PlayUrl,
 			CoverUrl:      videos[i].CoverUrl,
 			FavoriteCount: videos[i].FavoriteCount,

@@ -16,10 +16,21 @@ type FeedRequest struct {
 	Token      string `json:"token,omitempty"`
 }
 
+type VideoResp struct {
+	Id            int64           `json:"id"`
+	Author        repository.User `json:"author"`
+	PlayUrl       string          `json:"play_url"`
+	CoverUrl      string          `json:"cover_url"`
+	FavoriteCount int64           `json:"favorite_count"`
+	CommentCount  int64           `json:"comment_count"`
+	IsFavorite    bool            `json:"is_favorite"`
+	Title         string          `json:"title"`
+}
+
 type FeedResponse struct {
 	Response
-	VideoList []repository.Video `json:"video_list,omitempty"`
-	NextTime  int64              `json:"next_time,omitempty"`
+	VideoList []VideoResp `json:"video_list,omitempty"`
+	NextTime  int64       `json:"next_time,omitempty"`
 }
 
 func Feed(c *gin.Context) {
@@ -31,21 +42,29 @@ func Feed(c *gin.Context) {
 	}
 	token := c.Query("token")
 	if _, exists := onlineUser[token]; !exists {
-		c.JSON(http.StatusOK, Response{
-			StatusCode: 1,
-			StatusMsg:  "user is not exists",
-		})
-		return
-	} else {
-		//token 所对应的用户存在
-		videoList := videoDaoInstance.QueryFeedFlow(latestTime)
-		c.JSON(http.StatusOK, FeedResponse{
-			Response:  Response{StatusCode: 0},
-			VideoList: videoList,
-			NextTime:  time.Now().Unix(),
-		})
+		fmt.Println("用户未登录········")
 	}
-
+	videoList := videoDaoInstance.QueryFeedFlow(latestTime)
+	videoListResp := make([]VideoResp, len(videoList))
+	fmt.Println("获取视频流成功！")
+	for i, _ := range videoList {
+		user := userDaoInstance.QueryUserById(videoList[i].UserId)
+		videoListResp[i] = VideoResp{
+			Id:            videoList[i].Id,
+			Author:        *user,
+			PlayUrl:       videoList[i].PlayUrl,
+			CoverUrl:      videoList[i].CoverUrl,
+			FavoriteCount: videoList[i].FavoriteCount,
+			CommentCount:  videoList[i].CommentCount,
+			IsFavorite:    videoList[i].IsFavorite,
+			Title:         videoList[i].Title,
+		}
+	}
+	c.JSON(http.StatusOK, FeedResponse{
+		Response:  Response{StatusCode: 0, StatusMsg: "获取视频流成功！"},
+		VideoList: videoListResp,
+		NextTime:  time.Now().Unix(),
+	})
 }
 
 func PackVideoList() (videoList []repository.Video) {
