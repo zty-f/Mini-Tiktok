@@ -54,7 +54,7 @@ func Register(c *gin.Context) {
 	fmt.Fprintf(&tokenSb, "%s%s", userName, password)
 	c.JSON(http.StatusOK, RegisterResp{
 		Response: Response{2000, "注册成功！"},
-		UserId:   user.ID, //不知道该怎么写了
+		UserId:   user.Id, //不知道该怎么写了
 		Token:    tokenSb.String(),
 	})
 	return
@@ -69,12 +69,12 @@ func Login(c *gin.Context) {
 	fmt.Fprintf(&tokenSb, "%s%s", userName, password)
 	c.JSON(http.StatusOK, RegisterResp{
 		Response: Response{2001, "登录成功！"},
-		UserId:   user.ID,
+		UserId:   user.Id,
 		Token:    tokenSb.String(),
 	})
 
 	var loginUser = &repository.User{
-		ID:            user.ID,
+		Id:            user.Id,
 		Name:          user.Name,
 		FollowCount:   user.FollowCount,
 		FollowerCount: user.FollowerCount,
@@ -86,11 +86,11 @@ func Login(c *gin.Context) {
 
 func UserInfo(c *gin.Context) {
 	qid := c.Query("user_id")
-	utoken := c.Query("token") //不知道utoken有什么用
+	utoken := c.Query("token") //判断用户是否登录
 	if _, exists := onlineUser[utoken]; !exists {
 		c.JSON(http.StatusOK, Response{
-			StatusCode: 1,
-			StatusMsg:  "user is not online",
+			StatusCode: 4001,
+			StatusMsg:  "用户未登录请重新登陆！",
 		})
 		return
 	}
@@ -102,13 +102,14 @@ func UserInfo(c *gin.Context) {
 	var userEntity = userDaoInstance.QueryUserById(int64(userId))
 	fmt.Println("entity is: ", userEntity)
 	loginUser := &repository.User{
-		ID:            userEntity.ID,
+		Id:            userEntity.Id,
 		Name:          userEntity.Name,
 		FollowCount:   userEntity.FollowCount,
 		FollowerCount: userEntity.FollowerCount,
+		IsFollow:      userEntity.IsFollow,
 	}
 	c.JSON(http.StatusOK, UserResp{
-		Response: Response{0, ""},
+		Response: Response{2003, "获取登录用户详细信息成功！"},
 		User:     *loginUser,
 	})
 
