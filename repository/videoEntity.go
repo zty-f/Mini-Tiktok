@@ -1,9 +1,5 @@
 package repository
 
-import (
-	"errors"
-)
-
 const MaxListLength = 30
 
 type Video struct {
@@ -43,20 +39,13 @@ func (d *VideoDao) QueryByOwner(ownerId int64) []Video {
 
 func (d *VideoDao) CreateVideoRecord(userId int64, playURL string, coverURL string, title string) error {
 	var video = &Video{
-		Id:            0,
-		PlayUrl:       playURL,
-		CoverUrl:      coverURL,
-		FavoriteCount: 0,
-		CommentCount:  0,
-		Title:         title,
-		UserId:        userId,
-		IsFavorite:    false,
+		PlayUrl:  playURL,
+		CoverUrl: coverURL,
+		Title:    title,
+		UserId:   userId,
 	}
-	if video.Id == 0 {
-		return errors.New("failure in create video record")
-	}
+	db.Create(video)
 	return nil
-
 }
 
 func (d *VideoDao) QueryFeedFlow(latestTime int64) []Video {
