@@ -10,7 +10,7 @@ import (
 	"strings"
 )
 
-var onlineUser = map[string]*repository.User{}
+var onlineUser = map[string]*UserVo{}
 
 const MaxUsernameLen = 32
 const MaxPasswordLen = 32
@@ -22,7 +22,7 @@ type RegisterResp struct {
 }
 type UserResp struct {
 	Response
-	User repository.User `json:"user"`
+	User UserVo `json:"user"`
 }
 
 var userDaoInstance = repository.NewUserDaoInstance()
@@ -80,11 +80,12 @@ func Login(c *gin.Context) {
 		Token:    tokenSb.String(),
 	})
 
-	var loginUser = &repository.User{
+	var loginUser = &UserVo{
 		Id:            user.Id,
 		Name:          user.Name,
 		FollowCount:   user.FollowCount,
 		FollowerCount: user.FollowerCount,
+		IsFollow:      user.IsFollow,
 	}
 
 	//加入到online表里
@@ -107,8 +108,8 @@ func UserInfo(c *gin.Context) {
 		fmt.Printf("Function of atoi in UserInfo fail %v", err)
 	}
 	var userEntity = userDaoInstance.QueryUserById(int64(userId))
-	fmt.Println("entity is: ", userEntity)
-	loginUser := &repository.User{
+	fmt.Println("登录用户: ", userEntity)
+	loginUser := &UserVo{
 		Id:            userEntity.Id,
 		Name:          userEntity.Name,
 		FollowCount:   userEntity.FollowCount,

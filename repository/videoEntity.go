@@ -21,19 +21,8 @@ func NewVideoDaoInstance() *VideoDao {
 }
 
 func (d *VideoDao) QueryByOwner(ownerId int64) []Video {
-	//在用户查看自己的发布视频时使用，feed接口不用这个
-	var video = &Video{
-		Id:            0,
-		PlayUrl:       "",
-		CoverUrl:      "",
-		FavoriteCount: 0,
-		CommentCount:  0,
-		Title:         "",
-		UserId:        ownerId,
-		IsFavorite:    false,
-	}
 	var videos []Video
-	db.Where(video).Find(videos)
+	db.Order("create_time desc").Where("user_id=?", ownerId).Find(&videos)
 	return videos
 }
 

@@ -1,31 +1,39 @@
 package controller
 
 import (
+	"bytes"
 	"fmt"
+	"github.com/disintegration/imaging"
 	"github.com/gin-gonic/gin"
 	"github.com/mxysfive/Mini-Tiktok/repository"
+	ffmpeg "github.com/u2takey/ffmpeg-go"
+	"io"
 	"net/http"
+	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 )
 
 type PublishListResp struct {
 	Response
-	VideoList []repository.Video
+	VideoList []VideoVo `json:"video_list,omitempty"`
 }
 
 var videoDao = repository.NewVideoDaoInstance()
 
 // ResourceBase 如果映射的域名和改了，需要更改这个配置
-const ResourceBase = "http://5kt3855788.zicp.vip/static/"
+const ResourceBase = "http://192.168.0.101:8080/static/"
 
 func PublishVideo(c *gin.Context) {
 	token := c.PostForm("token")
 	title := c.PostForm("title")
+	fmt.Println(token + title)
 	if _, exists := onlineUser[token]; !exists {
+		fmt.Println("用户未登录！")
 		c.JSON(http.StatusOK, Response{
 			StatusCode: 1,
-			StatusMsg:  "user is not exists",
+			StatusMsg:  "请先登录再进行视频上传！",
 		})
 		return
 	}
@@ -47,24 +55,44 @@ func PublishVideo(c *gin.Context) {
 			StatusMsg:  err.Error(),
 		})
 		return
-	} else {
-		c.JSON(http.StatusOK, Response{
-			StatusCode: 0,
-			StatusMsg:  "upload success",
-		})
 	}
 	playURL, vErr := joinResourceURL(ResourceBase, finalName)
 	if vErr != nil {
 		fmt.Printf("wrong join URL")
 		fmt.Printf("Wrong URL is: %s", playURL)
 	}
-	coverName := ""
+	// 获取视频第一帧作为封面图片
+	reader := ExampleReadFrameAsJpeg("./public/"+finalName, 1)
+	img, err := imaging.Decode(reader)
+	if err != nil {
+		c.JSON(http.StatusOK, Response{
+			StatusCode: 1,
+			StatusMsg:  "封面图片解析错误",
+		})
+		return
+	}
+	err = imaging.Save(img, "./public/"+finalName+".jpeg")
+	if err != nil {
+		c.JSON(http.StatusOK, Response{
+			StatusCode: 1,
+			StatusMsg:  "封面图片保存错误",
+		})
+		return
+	}
+	coverName := finalName + ".jpeg"
 	coverURL, cErr := joinResourceURL(ResourceBase, coverName)
 	if cErr != nil {
 		fmt.Printf("wrong join URL")
 		fmt.Printf("Wrong URL is: %s", coverURL)
 	}
+	fmt.Println("视频上传成功！")
+	fmt.Println("playUrl:" + playURL)
+	fmt.Println("coverURL:" + coverURL)
 	videoDao.CreateVideoRecord(user.Id, playURL, coverURL, title)
+	c.JSON(http.StatusOK, Response{
+		StatusCode: 0,
+		StatusMsg:  "视频上传成功！！！！",
+	})
 	return
 }
 
@@ -79,32 +107,63 @@ func joinResourceURL(baseDomain, resourse string) (string, error) {
 }
 
 func PublishList(c *gin.Context) {
-	// uid := c.Query("user_id")
-	utoken := c.Query("token")
-
-	if _, exists := onlineUser[utoken]; !exists {
+	uid, err := strconv.ParseInt(c.Query("user_id"), 10, 64)
+	fmt.Println("用户id：" + c.Query("user_id"))
+	if err != nil {
 		c.JSON(http.StatusOK, Response{
 			1,
-			"user is not exists",
+			"用户id转换错误！",
 		})
 		return
 	}
-	user := onlineUser[utoken]
-	var videos = videoDao.QueryByOwner(user.Id)
-	var PublishedList = make([]repository.Video, len(videos))
+	utoken := c.Query("token")
+	if _, exists := onlineUser[utoken]; !exists {
+		c.JSON(http.StatusOK, Response{
+			1,
+			"用户未登录！请先登录~~~~~",
+		})
+		return
+	}
+	var videos = videoDao.QueryByOwner(uid)
+	var user = userDaoInstance.QueryUserById(uid)
+	loginUser := &UserVo{
+		Id:            user.Id,
+		Name:          user.Name,
+		FollowCount:   user.FollowCount,
+		FollowerCount: user.FollowerCount,
+		IsFollow:      user.IsFollow,
+	}
+	var PublishedList = make([]VideoVo, len(videos))
 	for i, _ := range PublishedList {
-		PublishedList[i] = repository.Video{
+		PublishedList[i] = VideoVo{
 			Id:            videos[i].Id,
-			UserId:        videos[i].UserId,
+			Author:        *loginUser,
 			PlayUrl:       videos[i].PlayUrl,
 			CoverUrl:      videos[i].CoverUrl,
 			FavoriteCount: videos[i].FavoriteCount,
 			CommentCount:  videos[i].CommentCount,
-			IsFavorite:    false, //自己给自己都是false吧我猜的
+			IsFavorite:    videos[i].IsFavorite, //自己给自己都是false吧我猜的
 			Title:         videos[i].Title,
 		}
 	}
-	c.JSON(http.StatusOK, PublishedList)
+	c.JSON(http.StatusOK, PublishListResp{
+		Response:  Response{StatusCode: 0, StatusMsg: "获取当前用户发布的视频列表成功！"},
+		VideoList: PublishedList,
+	})
 	return
 
+}
+
+// ExampleReadFrameAsJpeg 视频解析成流
+func ExampleReadFrameAsJpeg(inFileName string, frameNum int) io.Reader {
+	buf := bytes.NewBuffer(nil)
+	err := ffmpeg.Input(inFileName).
+		Filter("select", ffmpeg.Args{fmt.Sprintf("gte(n,%d)", frameNum)}).
+		Output("pipe:", ffmpeg.KwArgs{"vframes": 1, "format": "image2", "vcodec": "mjpeg"}).
+		WithOutput(buf, os.Stdout).
+		Run()
+	if err != nil {
+		panic(err)
+	}
+	return buf
 }

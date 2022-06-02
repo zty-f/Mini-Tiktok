@@ -16,21 +16,10 @@ type FeedRequest struct {
 	Token      string `json:"token,omitempty"`
 }
 
-type VideoResp struct {
-	Id            int64           `json:"id"`
-	Author        repository.User `json:"author"`
-	PlayUrl       string          `json:"play_url"`
-	CoverUrl      string          `json:"cover_url"`
-	FavoriteCount int64           `json:"favorite_count"`
-	CommentCount  int64           `json:"comment_count"`
-	IsFavorite    bool            `json:"is_favorite"`
-	Title         string          `json:"title"`
-}
-
 type FeedResponse struct {
 	Response
-	VideoList []VideoResp `json:"video_list,omitempty"`
-	NextTime  int64       `json:"next_time,omitempty"`
+	VideoList []VideoVo `json:"video_list,omitempty"`
+	NextTime  int64     `json:"next_time,omitempty"`
 }
 
 func Feed(c *gin.Context) {
@@ -45,13 +34,20 @@ func Feed(c *gin.Context) {
 		fmt.Println("用户未登录········")
 	}
 	videoList := videoDaoInstance.QueryFeedFlow(latestTime)
-	videoListResp := make([]VideoResp, len(videoList))
+	videoListResp := make([]VideoVo, len(videoList))
 	fmt.Println("获取视频流成功！")
 	for i, _ := range videoList {
 		user := userDaoInstance.QueryUserById(videoList[i].UserId)
-		videoListResp[i] = VideoResp{
+		loginUser := &UserVo{
+			Id:            user.Id,
+			Name:          user.Name,
+			FollowCount:   user.FollowCount,
+			FollowerCount: user.FollowerCount,
+			IsFollow:      user.IsFollow,
+		}
+		videoListResp[i] = VideoVo{
 			Id:            videoList[i].Id,
-			Author:        *user,
+			Author:        *loginUser,
 			PlayUrl:       videoList[i].PlayUrl,
 			CoverUrl:      videoList[i].CoverUrl,
 			FavoriteCount: videoList[i].FavoriteCount,
