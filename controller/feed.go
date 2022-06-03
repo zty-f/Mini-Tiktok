@@ -24,16 +24,27 @@ func Feed(c *gin.Context) {
 		fmt.Printf("wrong parse string result is: %v", latestTime)
 		latestTime = time.Now().Unix()
 	}
+	var loginUser UserVo
 	token := c.Query("token")
 	if _, exists := onlineUser[token]; !exists {
 		fmt.Println("用户未登录········")
+	} else {
+		loginUser = *onlineUser[token]
 	}
 	videoList := videoDaoInstance.QueryFeedFlow(latestTime)
 	videoListResp := make([]VideoVo, len(videoList))
 	fmt.Println("获取视频流成功！")
 	for i, _ := range videoList {
+		var isFavorite bool
 		user := userDaoInstance.QueryUserById(videoList[i].UserId)
-		loginUser := &UserVo{
+		actionType := favoriteDao.QueryActionTypeByUserIdAndVideoId(loginUser.Id, videoList[i].Id)
+		fmt.Println(actionType)
+		if actionType == 1 {
+			isFavorite = true
+		} else {
+			isFavorite = false
+		}
+		tmpUser := &UserVo{
 			Id:            user.Id,
 			Name:          user.Name,
 			FollowCount:   user.FollowCount,
@@ -42,12 +53,12 @@ func Feed(c *gin.Context) {
 		}
 		videoListResp[i] = VideoVo{
 			Id:            videoList[i].Id,
-			Author:        *loginUser,
+			Author:        *tmpUser,
 			PlayUrl:       videoList[i].PlayUrl,
 			CoverUrl:      videoList[i].CoverUrl,
 			FavoriteCount: videoList[i].FavoriteCount,
 			CommentCount:  videoList[i].CommentCount,
-			IsFavorite:    videoList[i].IsFavorite,
+			IsFavorite:    isFavorite,
 			Title:         videoList[i].Title,
 		}
 	}

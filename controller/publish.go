@@ -108,7 +108,7 @@ func joinResourceURL(baseDomain, resourse string) (string, error) {
 
 func PublishList(c *gin.Context) {
 	uid, err := strconv.ParseInt(c.Query("user_id"), 10, 64)
-	fmt.Println("用户id：" + c.Query("user_id"))
+	fmt.Println("查询发布视频列表用户id：" + c.Query("user_id"))
 	if err != nil {
 		c.JSON(http.StatusOK, Response{
 			1,
@@ -135,6 +135,13 @@ func PublishList(c *gin.Context) {
 	}
 	var PublishedList = make([]VideoVo, len(videos))
 	for i, _ := range PublishedList {
+		var isFavorite bool
+		actionType := favoriteDao.QueryActionTypeByUserIdAndVideoId(uid, videos[i].Id)
+		if actionType == 1 {
+			isFavorite = true
+		} else {
+			isFavorite = false
+		}
 		PublishedList[i] = VideoVo{
 			Id:            videos[i].Id,
 			Author:        *loginUser,
@@ -142,7 +149,7 @@ func PublishList(c *gin.Context) {
 			CoverUrl:      videos[i].CoverUrl,
 			FavoriteCount: videos[i].FavoriteCount,
 			CommentCount:  videos[i].CommentCount,
-			IsFavorite:    videos[i].IsFavorite, //自己给自己都是false吧我猜的
+			IsFavorite:    isFavorite,
 			Title:         videos[i].Title,
 		}
 	}

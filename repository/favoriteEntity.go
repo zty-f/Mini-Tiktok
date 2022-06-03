@@ -51,3 +51,17 @@ func (f *FavoriteDao) ActionOfLike(userId int64, videoId int64, actionType int32
 	}
 	return nil
 }
+
+func (f *FavoriteDao) QueryVideosIdByUserId(userId int64) []int64 {
+	var ids []int64
+	fmt.Println("通过userId查询点赞视频列表的videoId")
+	db.Table("favorites").Select("video_id").Where("user_id = ?", userId).Find(&ids)
+	return ids
+}
+
+func (f *FavoriteDao) QueryActionTypeByUserIdAndVideoId(userId, videoId int64) int32 {
+	var actionType int32
+	fmt.Println("通过userId+videoId查询点赞状态")
+	db.Table("favorites").Select("is_favorite").Where("user_id = ? and video_id = ?", userId, videoId).Find(&actionType)
+	return actionType
+}
