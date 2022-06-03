@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/mxysfive/Mini-Tiktok/controller"
+	"github.com/zty-f/Mini-Tiktok/controller"
 )
 
 func initRouter(r *gin.Engine) {
@@ -16,4 +16,5 @@ func initRouter(r *gin.Engine) {
 	apiRouter.POST("/user/login/", controller.Login)
 	apiRouter.POST("/publish/action/", controller.PublishVideo)
 	apiRouter.GET("/publish/list/", controller.PublishList)
+	apiRouter.POST("/favorite/action/", controller.Action)
 }
