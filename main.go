@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/mxysfive/Mini-Tiktok/repository"
+	"github.com/zty-f/Mini-Tiktok/repository"
 )
 
 func main() {

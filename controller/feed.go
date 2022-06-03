@@ -3,18 +3,13 @@ package controller
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"github.com/mxysfive/Mini-Tiktok/repository"
+	"github.com/zty-f/Mini-Tiktok/repository"
 	"net/http"
 	"strconv"
 	"time"
 )
 
 var videoDaoInstance = repository.NewVideoDaoInstance()
-
-type FeedRequest struct {
-	LatestTime int64  `json:"latest_time,omitempty"`
-	Token      string `json:"token,omitempty"`
-}
 
 type FeedResponse struct {
 	Response
@@ -61,9 +56,4 @@ func Feed(c *gin.Context) {
 		VideoList: videoListResp,
 		NextTime:  time.Now().Unix(),
 	})
-}
-
-func PackVideoList() (videoList []repository.Video) {
-	//查video的数据
-	return nil
 }

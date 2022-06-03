@@ -1,10 +1,11 @@
-module github.com/mxysfive/Mini-Tiktok
+module github.com/zty-f/Mini-Tiktok
 
 go 1.18
 
 require (
 	github.com/disintegration/imaging v1.6.2
 	github.com/gin-gonic/gin v1.7.7
+	github.com/qmhball/db2gorm v0.1.0
 	github.com/u2takey/ffmpeg-go v0.4.1
 	gorm.io/driver/mysql v1.3.4
 	gorm.io/gorm v1.23.5
