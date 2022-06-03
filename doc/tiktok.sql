@@ -19,7 +19,6 @@ CREATE TABLE `videos`
     `comment_count`  bigint(0) NULL DEFAULT 0 COMMENT '评论量',
     `title`          varchar(128)  DEFAULT '' COMMENT '标题',
     `user_id`        bigint(0) NOT NULL COMMENT 'FK reference user id',
-    `is_favorite`    tinyint(0) NULL DEFAULT 0,
     `create_time`    datetime(0) NOT NULL DEFAULT CURRENT_TIMESTAMP (0),
     PRIMARY KEY (`id`)
 )

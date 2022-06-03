@@ -10,7 +10,6 @@ type Video struct {
 	CommentCount  int64  `gorm:"column:comment_count"`
 	Title         string `gorm:"column:title;size:32"`
 	UserId        int64  `gorm:"column:user_id"`
-	IsFavorite    int32  `gorm:"column:is_favorite"`
 }
 
 type VideoDao struct {
