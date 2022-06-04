@@ -58,7 +58,7 @@ func (f *FavoriteDao) ActionOfLike(userId int64, videoId int64, actionType int32
 func (f *FavoriteDao) QueryVideosIdByUserId(userId int64) []int64 {
 	var ids []int64
 	fmt.Println("通过userId查询点赞视频列表的videoId")
-	db.Table("favorites").Select("video_id").Where("user_id = ?", userId).Find(&ids)
+	db.Table("favorites").Select("video_id").Where("user_id = ? and is_favorite = ?", userId, 1).Find(&ids)
 	return ids
 }
 
