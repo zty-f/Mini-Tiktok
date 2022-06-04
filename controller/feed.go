@@ -45,12 +45,19 @@ func Feed(c *gin.Context) {
 		} else {
 			isFavorite = false
 		}
+		favoriteCount := favoriteDao.QueryFavoriteCountByUserId(videoList[i].UserId)
+		totalFavorited := videoDaoInstance.QueryTotalFavoriteCountByUserId(videoList[i].UserId)
 		tmpUser := &UserVo{
-			Id:            user.Id,
-			Name:          user.Name,
-			FollowCount:   user.FollowCount,
-			FollowerCount: user.FollowerCount,
-			IsFollow:      false,
+			Id:              user.Id,
+			Name:            user.Name,
+			FollowCount:     user.FollowCount,
+			FollowerCount:   user.FollowerCount,
+			IsFollow:        false,
+			Avatar:          "https://s3.bmp.ovh/imgs/2022/05/04/345d42da2a13020b.jpg",
+			Signature:       "冲冲冲，就快要做完了！",
+			BackgroundImage: "https://s3.bmp.ovh/imgs/2022/05/04/29ccf3f609f3e5f2.jpg",
+			TotalFavorited:  totalFavorited,
+			FavoriteCount:   favoriteCount,
 		}
 		videoListResp[i] = VideoVo{
 			Id:            videoList[i].Id,
