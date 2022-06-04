@@ -55,7 +55,7 @@ func CommentAction(c *gin.Context) {
 			Name:          user.Name,
 			FollowCount:   user.FollowCount,
 			FollowerCount: user.FollowerCount,
-			IsFollow:      user.IsFollow,
+			IsFollow:      false,
 		}
 		commentVo := &CommentVo{
 			Id:         comment.ID,
@@ -121,7 +121,7 @@ func CommentList(c *gin.Context) {
 			Name:          user.Name,
 			FollowCount:   user.FollowCount,
 			FollowerCount: user.FollowerCount,
-			IsFollow:      user.IsFollow,
+			IsFollow:      false,
 		}
 		commentList[i] = CommentVo{
 			Id:         comments[i].ID,

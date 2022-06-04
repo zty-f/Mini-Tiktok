@@ -50,7 +50,7 @@ func Feed(c *gin.Context) {
 			Name:          user.Name,
 			FollowCount:   user.FollowCount,
 			FollowerCount: user.FollowerCount,
-			IsFollow:      user.IsFollow,
+			IsFollow:      false,
 		}
 		videoListResp[i] = VideoVo{
 			Id:            videoList[i].Id,

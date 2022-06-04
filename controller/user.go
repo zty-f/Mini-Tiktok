@@ -87,7 +87,7 @@ func Login(c *gin.Context) {
 		Name:          user.Name,
 		FollowCount:   user.FollowCount,
 		FollowerCount: user.FollowerCount,
-		IsFollow:      user.IsFollow,
+		IsFollow:      false,
 	}
 
 	//加入到online表里
@@ -117,7 +117,7 @@ func UserInfo(c *gin.Context) {
 		Name:            userEntity.Name,
 		FollowCount:     userEntity.FollowCount,
 		FollowerCount:   userEntity.FollowerCount,
-		IsFollow:        userEntity.IsFollow,
+		IsFollow:        false,
 		Avatar:          "https://s3.bmp.ovh/imgs/2022/05/04/345d42da2a13020b.jpg",
 		Signature:       "冲冲冲，就快要做完了！",
 		BackgroundImage: "https://s3.bmp.ovh/imgs/2022/05/04/29ccf3f609f3e5f2.jpg",

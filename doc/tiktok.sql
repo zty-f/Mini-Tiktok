@@ -6,7 +6,6 @@ CREATE TABLE `users`
     `password`       varchar(32)  NULL DEFAULT NULL,
     `follow_count`   bigint(0)  NULL DEFAULT 0,
     `follower_count` bigint(0)  NULL DEFAULT 0,
-    `is_follow`      tinyint(0)  NULL DEFAULT 0,
     PRIMARY KEY (`id`)
 )
 -- 视频表
@@ -52,6 +51,5 @@ CREATE TABLE `relations`
     `id`           bigint(0) NOT NULL AUTO_INCREMENT,
     `user_id`      bigint(0) NULL DEFAULT 0,
     `following_id` bigint(0) NULL DEFAULT 0,
-    `is_follow`    tinyint(0) NULL DEFAULT 0,
     PRIMARY KEY (`id`)
 )

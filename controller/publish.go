@@ -125,7 +125,7 @@ func PublishList(c *gin.Context) {
 		Name:          user.Name,
 		FollowCount:   user.FollowCount,
 		FollowerCount: user.FollowerCount,
-		IsFollow:      user.IsFollow,
+		IsFollow:      false,
 	}
 	var PublishedList = make([]VideoVo, len(videos))
 	for i, _ := range PublishedList {

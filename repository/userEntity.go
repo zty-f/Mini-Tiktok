@@ -8,7 +8,6 @@ type User struct {
 	Password      string `gorm:"column:password;size:32;"`
 	FollowCount   int64  `gorm:"column:follow_count"`
 	FollowerCount int64  `gorm:"column:follower_count"`
-	IsFollow      bool   `gorm:"column:is_follow"`
 }
 
 type UserDao struct {
