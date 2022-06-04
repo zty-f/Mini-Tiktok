@@ -107,11 +107,7 @@ func UserInfo(c *gin.Context) {
 	}
 	var userEntity = userDaoInstance.QueryUserById(userId)
 	favoriteCount := favoriteDao.QueryFavoriteCountByUserId(userId)
-	ids := videoDaoInstance.QueryVideoIdsByUserId(userId)
-	totalFavorited := int64(0)
-	if len(ids) != 0 {
-		totalFavorited = favoriteDao.QueryTotalFavoriteCountByIds(ids)
-	}
+	totalFavorited := videoDaoInstance.QueryTotalFavoriteCountByUserId(userId)
 	loginUser := &UserVo{
 		Id:              userEntity.Id,
 		Name:            userEntity.Name,

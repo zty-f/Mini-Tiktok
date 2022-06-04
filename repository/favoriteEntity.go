@@ -77,10 +77,3 @@ func (f *FavoriteDao) QueryFavoriteCountByUserId(userId int64) int64 {
 	db.Model(&Favorite{}).Where("user_id = ? and is_favorite = ?", userId, 1).Count(&favoriteCount)
 	return favoriteCount
 }
-
-// QueryTotalFavoriteCountByIds 根据视频id获取这些视频的总点赞数量
-func (f *FavoriteDao) QueryTotalFavoriteCountByIds(ids []int64) int64 {
-	var totalFavoriteCount int64
-	db.Model(&Favorite{}).Where("is_favorite = ? and video_id in ?", 1, ids).Count(&totalFavoriteCount)
-	return totalFavoriteCount
-}
