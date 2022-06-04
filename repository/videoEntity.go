@@ -1,15 +1,18 @@
 package repository
 
+import "time"
+
 const MaxListLength = 30
 
 type Video struct {
-	Id            int64  `gorm:"primaryKey"`
-	PlayUrl       string `gorm:"size:64"`
-	CoverUrl      string `gorm:"size:64"`
-	FavoriteCount int64  `gorm:"column:favorite_count"`
-	CommentCount  int64  `gorm:"column:comment_count"`
-	Title         string `gorm:"column:title;size:32"`
-	UserId        int64  `gorm:"column:user_id"`
+	Id            int64     `gorm:"primaryKey"`
+	PlayUrl       string    `gorm:"size:64"`
+	CoverUrl      string    `gorm:"size:64"`
+	FavoriteCount int64     `gorm:"column:favorite_count"`
+	CommentCount  int64     `gorm:"column:comment_count"`
+	Title         string    `gorm:"column:title;size:32"`
+	UserId        int64     `gorm:"column:user_id"`
+	CreateTime    time.Time `gorm:"default:CURRENT_TIMESTAMP"`
 }
 
 type VideoDao struct {

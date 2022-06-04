@@ -29,10 +29,10 @@ ALTER TABLE `tiktok`.`favorites`
 CREATE TABLE `comments`
 (
     `id`          bigint(0) NOT NULL AUTO_INCREMENT,
-    `user_id`     varchar(40)  DEFAULT '',
-    `video_id`    varchar(40)  DEFAULT '',
+    `user_id`     bigint(0) NOT NULL,
+    `video_id`    bigint(0) NOT NULL,
     `content`     varchar(500) DEFAULT '',
-    `create_date` varchar(200) DEFAULT '',
+    `create_time`    datetime(0) NOT NULL DEFAULT CURRENT_TIMESTAMP (0),
     PRIMARY KEY (`id`)
 )
 
@@ -40,8 +40,8 @@ CREATE TABLE `comments`
 CREATE TABLE `favorites`
 (
     `id`          bigint(0) NOT NULL AUTO_INCREMENT,
-    `user_id`     bigint(0) NULL DEFAULT NULL,
-    `video_id`    bigint(0) NULL DEFAULT NULL,
+    `user_id`     bigint(0) NOT NULL,
+    `video_id`    bigint(0) NOT NULL,
     `is_favorite` tinyint(0) NULL DEFAULT 0,
     PRIMARY KEY (`id`)
 )
@@ -53,5 +53,5 @@ CREATE TABLE `relations`
     `user_id`      bigint(0) NULL DEFAULT 0,
     `following_id` bigint(0) NULL DEFAULT 0,
     `is_follow`    tinyint(0) NULL DEFAULT 0,
-    PRIMARY KEY (`id`) USING BTREE
+    PRIMARY KEY (`id`)
 )
