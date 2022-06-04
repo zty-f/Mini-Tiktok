@@ -19,11 +19,16 @@ type VideoVo struct {
 }
 
 type UserVo struct {
-	Id            int64  `json:"id"`
-	Name          string `json:"name"`
-	FollowCount   int64  `json:"follow_count,omitempty"`
-	FollowerCount int64  `json:"follower_count,omitempty"`
-	IsFollow      bool   `json:"is_follow"`
+	Id              int64  `json:"id"`
+	Name            string `json:"name"`
+	Avatar          string `json:"avatar"`
+	Signature       string `json:"signature"`
+	BackgroundImage string `json:"background_image"`
+	FollowCount     int64  `json:"follow_count,omitempty"`
+	FollowerCount   int64  `json:"follower_count,omitempty"`
+	TotalFavorited  int64  `json:"total_favorited,omitempty"`
+	FavoriteCount   int64  `json:"favorite_count,omitempty"`
+	IsFollow        bool   `json:"is_follow"`
 }
 
 type CommentVo struct {

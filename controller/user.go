@@ -104,11 +104,16 @@ func UserInfo(c *gin.Context) {
 	var userEntity = userDaoInstance.QueryUserById(int64(userId))
 	fmt.Println("登录用户: ", userEntity)
 	loginUser := &UserVo{
-		Id:            userEntity.Id,
-		Name:          userEntity.Name,
-		FollowCount:   userEntity.FollowCount,
-		FollowerCount: userEntity.FollowerCount,
-		IsFollow:      userEntity.IsFollow,
+		Id:              userEntity.Id,
+		Name:            userEntity.Name,
+		FollowCount:     userEntity.FollowCount,
+		FollowerCount:   userEntity.FollowerCount,
+		IsFollow:        userEntity.IsFollow,
+		Avatar:          "https://s3.bmp.ovh/imgs/2022/05/04/345d42da2a13020b.jpg",
+		Signature:       "冲冲冲，就快要做完了！",
+		BackgroundImage: "https://s3.bmp.ovh/imgs/2022/05/04/29ccf3f609f3e5f2.jpg",
+		TotalFavorited:  99,
+		FavoriteCount:   99,
 	}
 	c.JSON(http.StatusOK, UserResp{
 		Response: Response{0, "获取登录用户详细信息成功！"},
