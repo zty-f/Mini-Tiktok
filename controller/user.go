@@ -27,6 +27,7 @@ type UserResp struct {
 
 var userDaoInstance = repository.NewUserDaoInstance()
 
+// Register 注册
 func Register(c *gin.Context) {
 	userName := c.Query("username")
 	password := c.Query("password")
@@ -60,6 +61,7 @@ func Register(c *gin.Context) {
 	return
 }
 
+// Login 登录
 func Login(c *gin.Context) {
 	userName := c.Query("username")
 	password := c.Query("password")
@@ -92,6 +94,7 @@ func Login(c *gin.Context) {
 	onlineUser[tokenSb.String()] = loginUser
 }
 
+// UserInfo 获取用户详细信息
 func UserInfo(c *gin.Context) {
 	qid := c.Query("user_id")
 	utoken := c.Query("token") //判断用户是否登录
@@ -124,6 +127,7 @@ func UserInfo(c *gin.Context) {
 	return
 }
 
+//检查用户名
 func checkUserName(userName string) error {
 	if len(userName) > MaxUsernameLen {
 		return errors.New("username is too long")
@@ -132,6 +136,7 @@ func checkUserName(userName string) error {
 	return nil
 }
 
+//检查密码
 func checkPassword(passWord string) error {
 	if len(passWord) > MaxPasswordLen {
 		return errors.New("password is too long")

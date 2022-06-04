@@ -25,6 +25,7 @@ var videoDao = repository.NewVideoDaoInstance()
 // ResourceBase 如果映射的域名和改了，需要更改这个配置
 const ResourceBase = "http://192.168.0.101:8080/static/"
 
+// PublishVideo 发布视频
 func PublishVideo(c *gin.Context) {
 	token := c.PostForm("token")
 	title := c.PostForm("title")
@@ -96,6 +97,7 @@ func PublishVideo(c *gin.Context) {
 	return
 }
 
+// 拼接字符串
 func joinResourceURL(baseDomain, resourse string) (string, error) {
 	var sb strings.Builder
 	_, err := fmt.Fprintf(&sb, "%s/%s", baseDomain, resourse)
@@ -106,6 +108,7 @@ func joinResourceURL(baseDomain, resourse string) (string, error) {
 	return sb.String(), nil
 }
 
+// PublishList 发布视频列表
 func PublishList(c *gin.Context) {
 	uid, err := strconv.ParseInt(c.Query("user_id"), 10, 64)
 	fmt.Println("查询发布视频列表用户id：" + c.Query("user_id"))

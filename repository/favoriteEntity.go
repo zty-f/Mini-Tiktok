@@ -16,10 +16,12 @@ type Favorite struct {
 type FavoriteDao struct {
 }
 
+// NewFavoriteDaoInstance 返回一个点赞表实体类的指针变量，可以方便调用该结构体的方法
 func NewFavoriteDaoInstance() *FavoriteDao {
 	return &FavoriteDao{}
 }
 
+// ActionOfLike 通过传入的参数完成点赞操作，更新数据库表（视频点赞数修改、点赞表修改）
 func (f *FavoriteDao) ActionOfLike(userId int64, videoId int64, actionType int32) error {
 	video := &Video{}
 	favorite := &Favorite{
@@ -52,6 +54,7 @@ func (f *FavoriteDao) ActionOfLike(userId int64, videoId int64, actionType int32
 	return nil
 }
 
+// QueryVideosIdByUserId 通过用户id查询查询该用户点赞的所有视频对应的视频id列表
 func (f *FavoriteDao) QueryVideosIdByUserId(userId int64) []int64 {
 	var ids []int64
 	fmt.Println("通过userId查询点赞视频列表的videoId")
@@ -59,6 +62,7 @@ func (f *FavoriteDao) QueryVideosIdByUserId(userId int64) []int64 {
 	return ids
 }
 
+// QueryActionTypeByUserIdAndVideoId 通过用户id和视频id获取该用户对于这个视频是否点赞的状态码
 func (f *FavoriteDao) QueryActionTypeByUserIdAndVideoId(userId, videoId int64) int32 {
 	var actionType int32
 	fmt.Println("通过userId+videoId查询点赞状态")

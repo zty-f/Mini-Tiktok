@@ -15,6 +15,7 @@ type FavoriteResponse struct {
 	VideoList []VideoVo `json:"video_list,omitempty"`
 }
 
+// Action 点赞
 func Action(c *gin.Context) {
 	token := c.Query("token")
 	videoId, err1 := strconv.ParseInt(c.Query("video_id"), 10, 64)
@@ -52,6 +53,7 @@ func Action(c *gin.Context) {
 	return
 }
 
+// List 获取点赞列表
 func List(c *gin.Context) {
 	userId, err1 := strconv.ParseInt(c.Query("user_id"), 10, 64)
 	token := c.Query("token")

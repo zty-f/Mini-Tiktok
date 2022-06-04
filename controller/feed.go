@@ -17,6 +17,7 @@ type FeedResponse struct {
 	NextTime  int64     `json:"next_time,omitempty"`
 }
 
+// Feed 获取视频流
 func Feed(c *gin.Context) {
 	strTime := c.Query("latest_time")
 	latestTime, err := strconv.ParseInt(strTime, 10, 64)

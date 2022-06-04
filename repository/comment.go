@@ -10,11 +10,12 @@ type Comment struct {
 type CommentDao struct {
 }
 
+// NewCommentDaoInstance 返回一个评论表实体类的指针变量，可以方便调用该结构体的方法
 func NewCommentDaoInstance() *CommentDao {
 	return &CommentDao{}
 }
 
-func (c *CommentDao) QueryCommentByPKs(uid, vid int64) *Comment {
+func (c *CommentDao) QueryCommentById(uid, vid int64) *Comment {
 	//根据符合主键找到符合条件的comments
 	var comment = &Comment{
 		UserId:      uid,

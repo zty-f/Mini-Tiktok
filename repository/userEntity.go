@@ -14,16 +14,19 @@ type User struct {
 type UserDao struct {
 }
 
+// NewUserDaoInstance 返回一个用户实体类的指针变量，可以方便调用该结构体的方法
 func NewUserDaoInstance() *UserDao {
 	return &UserDao{}
 }
 
+// QueryUserById 通过用户id查询详细的用户信息
 func (u *UserDao) QueryUserById(userId int64) *User {
 	var user = &User{}
 	db.First(user, userId)
 	return user
 }
 
+// CreateByNameAndPassword 通过用户名和密码创建新用户
 func (u *UserDao) CreateByNameAndPassword(name, password string) *User {
 	var user = &User{
 		Id:            0,
@@ -37,7 +40,8 @@ func (u *UserDao) CreateByNameAndPassword(name, password string) *User {
 	return user
 }
 
-func (u *UserDao) QueryLoginInfo(name, password string) *User {
+// QueryLoginInfo 通过用户名和密码查询是否包含此用户
+func (u *UserDao) QueryLoginInfo(name string, password string) *User {
 	var user = &User{}
 	db.Where("name = ? and password = ?", name, password).Find(user)
 	return user
