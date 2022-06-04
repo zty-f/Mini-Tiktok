@@ -27,15 +27,7 @@ func Action(c *gin.Context) {
 		})
 		return
 	}
-	if _, exists := onlineUser[token]; !exists {
-		fmt.Println("用户未登录········")
-		c.JSON(http.StatusOK, Response{
-			StatusCode: 1,
-			StatusMsg:  "请先登录再进行点赞！",
-		})
-		return
-	}
-	userId := onlineUser[token].Id
+	userId := OnlineUser[token].Id
 	fmt.Printf("点赞userId：%d==videoId：%d==actionType:%d\n", userId, videoId, actionType)
 	err := favoriteDao.ActionOfLike(userId, videoId, int32(actionType))
 	if err != nil {
@@ -56,20 +48,11 @@ func Action(c *gin.Context) {
 // List 获取点赞列表
 func List(c *gin.Context) {
 	userId, err1 := strconv.ParseInt(c.Query("user_id"), 10, 64)
-	token := c.Query("token")
 	fmt.Printf("获取点赞视频列表userId：%d\n", userId)
 	if err1 != nil {
 		c.JSON(http.StatusOK, Response{
 			StatusCode: 1,
 			StatusMsg:  "服务端错误！",
-		})
-		return
-	}
-	if _, exists := onlineUser[token]; !exists {
-		fmt.Println("用户未登录········")
-		c.JSON(http.StatusOK, Response{
-			StatusCode: 1,
-			StatusMsg:  "请先登录再进行查看点赞视频列表！",
 		})
 		return
 	}

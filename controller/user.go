@@ -10,7 +10,7 @@ import (
 	"strings"
 )
 
-var onlineUser = map[string]*UserVo{}
+var OnlineUser = map[string]*UserVo{}
 
 const MaxUsernameLen = 32
 const MaxPasswordLen = 32
@@ -91,21 +91,12 @@ func Login(c *gin.Context) {
 	}
 
 	//加入到online表里
-	onlineUser[tokenSb.String()] = loginUser
+	OnlineUser[tokenSb.String()] = loginUser
 }
 
 // UserInfo 获取用户详细信息
 func UserInfo(c *gin.Context) {
 	qid := c.Query("user_id")
-	utoken := c.Query("token") //判断用户是否登录
-	if _, exists := onlineUser[utoken]; !exists {
-		c.JSON(http.StatusOK, Response{
-			StatusCode: 4001,
-			StatusMsg:  "用户未登录请重新登陆！",
-		})
-		return
-	}
-
 	userId, err := strconv.Atoi(qid)
 	if err != nil {
 		fmt.Printf("Function of atoi in UserInfo fail %v", err)

@@ -27,10 +27,10 @@ func Feed(c *gin.Context) {
 	}
 	var loginUser UserVo
 	token := c.Query("token")
-	if _, exists := onlineUser[token]; !exists {
+	if _, exists := OnlineUser[token]; !exists {
 		fmt.Println("用户未登录········")
 	} else {
-		loginUser = *onlineUser[token]
+		loginUser = *OnlineUser[token]
 	}
 	videoList := videoDaoInstance.QueryFeedFlow(latestTime)
 	videoListResp := make([]VideoVo, len(videoList))

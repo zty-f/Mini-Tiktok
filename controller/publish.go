@@ -30,14 +30,6 @@ func PublishVideo(c *gin.Context) {
 	token := c.PostForm("token")
 	title := c.PostForm("title")
 	fmt.Println(token + title)
-	if _, exists := onlineUser[token]; !exists {
-		fmt.Println("用户未登录！")
-		c.JSON(http.StatusOK, Response{
-			StatusCode: 1,
-			StatusMsg:  "请先登录再进行视频上传！",
-		})
-		return
-	}
 	data, err := c.FormFile("data")
 	if err != nil {
 		c.JSON(http.StatusOK, Response{
@@ -47,7 +39,7 @@ func PublishVideo(c *gin.Context) {
 		return
 	}
 	filename := filepath.Base(data.Filename)
-	user := onlineUser[token]
+	user := OnlineUser[token]
 	finalName := fmt.Sprintf("%d_%s", user.Id, filename)
 	saveFile := filepath.Join("./public/", finalName)
 	if err := c.SaveUploadedFile(data, saveFile); err != nil {
@@ -116,14 +108,6 @@ func PublishList(c *gin.Context) {
 		c.JSON(http.StatusOK, Response{
 			1,
 			"用户id转换错误！",
-		})
-		return
-	}
-	utoken := c.Query("token")
-	if _, exists := onlineUser[utoken]; !exists {
-		c.JSON(http.StatusOK, Response{
-			1,
-			"用户未登录！请先登录~~~~~",
 		})
 		return
 	}

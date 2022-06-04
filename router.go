@@ -2,20 +2,26 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/zty-f/Mini-Tiktok/config"
 	"github.com/zty-f/Mini-Tiktok/controller"
 )
 
 func initRouter(r *gin.Engine) {
 	r.Static("/static", "./public")
 
-	apiRouter := r.Group("/douyin")
+	// 不用拦截的接口
+	r.GET("/douyin/feed/", controller.Feed)
+	r.POST("/douyin/user/register/", controller.Register)
+	r.POST("/douyin/user/login/", controller.Login)
 
-	apiRouter.GET("/feed/", controller.Feed)
+	apiRouter := r.Group("/douyin")
+	//配置拦截器
+	apiRouter.Use(config.CheckToken)
+
 	apiRouter.GET("/user/", controller.UserInfo)
-	apiRouter.POST("/user/register/", controller.Register)
-	apiRouter.POST("/user/login/", controller.Login)
 	apiRouter.POST("/publish/action/", controller.PublishVideo)
 	apiRouter.GET("/publish/list/", controller.PublishList)
 	apiRouter.POST("/favorite/action/", controller.Action)
 	apiRouter.GET("/favorite/list/", controller.List)
+	apiRouter.POST("/comment/action/", controller.Comment)
 }
