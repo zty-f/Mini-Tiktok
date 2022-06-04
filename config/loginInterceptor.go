@@ -10,7 +10,7 @@ import (
 func CheckToken(c *gin.Context) {
 	token := c.Query("token")
 	if _, exists := controller.OnlineUser[token]; !exists {
-		fmt.Println("用户未登录········")
+		fmt.Println("用户未登录········token:" + token)
 		c.JSON(http.StatusOK, controller.Response{
 			StatusCode: 1,
 			StatusMsg:  "请先登录再进行后续操作，谢谢！",

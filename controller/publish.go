@@ -28,6 +28,13 @@ const ResourceBase = "http://192.168.0.101:8080/static/"
 // PublishVideo 发布视频
 func PublishVideo(c *gin.Context) {
 	token := c.PostForm("token")
+	if _, exists := OnlineUser[token]; !exists {
+		fmt.Println("用户未登录········token:" + token)
+		c.JSON(http.StatusOK, Response{
+			StatusCode: 1,
+			StatusMsg:  "请先登录再进行后续操作，谢谢！",
+		})
+	}
 	title := c.PostForm("title")
 	fmt.Println(token + title)
 	data, err := c.FormFile("data")

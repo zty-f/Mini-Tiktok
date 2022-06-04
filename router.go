@@ -13,13 +13,13 @@ func initRouter(r *gin.Engine) {
 	r.GET("/douyin/feed/", controller.Feed)
 	r.POST("/douyin/user/register/", controller.Register)
 	r.POST("/douyin/user/login/", controller.Login)
+	r.POST("/douyin/publish/action/", controller.PublishVideo)
 
 	apiRouter := r.Group("/douyin")
 	//配置拦截器
 	apiRouter.Use(config.CheckToken)
 
 	apiRouter.GET("/user/", controller.UserInfo)
-	apiRouter.POST("/publish/action/", controller.PublishVideo)
 	apiRouter.GET("/publish/list/", controller.PublishList)
 	apiRouter.POST("/favorite/action/", controller.FavoriteAction)
 	apiRouter.GET("/favorite/list/", controller.FavoriteList)
