@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"fmt"
 	"gorm.io/gorm"
 	"time"
 )
@@ -63,4 +64,15 @@ func (c *CommentDao) QueryCommentById(commentId int64) (*Comment, error) {
 		return comment, err
 	}
 	return comment, nil
+}
+
+// QueryCommentsByVideoId 通过视频id查询该视频所有评论
+func (c *CommentDao) QueryCommentsByVideoId(videoId int64) ([]Comment, error) {
+	var comments []Comment
+	fmt.Println("通过videoId查询所有评论")
+	err := db.Order("create_time desc").Where("video_id = ?", videoId).Find(&comments).Error
+	if err != nil {
+		return comments, err
+	}
+	return comments, nil
 }

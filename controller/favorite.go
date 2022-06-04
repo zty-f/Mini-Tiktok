@@ -60,7 +60,7 @@ func FavoriteList(c *gin.Context) {
 	if len(ids) == 0 {
 		fmt.Println("该用户未点赞任何视频！")
 		c.JSON(http.StatusOK, FavoriteResponse{
-			Response:  Response{StatusCode: 0, StatusMsg: "该用户未点赞任何视频！"},
+			Response:  Response{0, "该用户未点赞任何视频！"},
 			VideoList: nil,
 		})
 	}
@@ -95,7 +95,7 @@ func FavoriteList(c *gin.Context) {
 		}
 	}
 	c.JSON(http.StatusOK, FavoriteResponse{
-		Response:  Response{StatusCode: 0, StatusMsg: "获取点赞视频列表成功！"},
+		Response:  Response{0, "获取点赞视频列表成功！"},
 		VideoList: videoListResp,
 	})
 }

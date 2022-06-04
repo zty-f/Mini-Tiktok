@@ -15,6 +15,11 @@ type CommentResponse struct {
 	Comment CommentVo `json:"comment"`
 }
 
+type CommentListResponse struct {
+	Response
+	CommentList []CommentVo `json:"comment_list,omitempty"`
+}
+
 // CommentAction 评论功能
 func CommentAction(c *gin.Context) {
 	token := c.Query("token")
@@ -75,5 +80,59 @@ func CommentAction(c *gin.Context) {
 		}
 		c.JSON(http.StatusOK, Response{0, "删除评论成功！"})
 	}
+	return
+}
+
+// CommentList 获取评论列表
+func CommentList(c *gin.Context) {
+	videoId, err1 := strconv.ParseInt(c.Query("video_id"), 10, 64)
+	fmt.Printf("获取评论列表列表的videoId：%d\n", videoId)
+	if err1 != nil {
+		c.JSON(http.StatusOK, Response{
+			StatusCode: 1,
+			StatusMsg:  "服务端错误！",
+		})
+		return
+	}
+	comments, err2 := commentDao.QueryCommentsByVideoId(videoId)
+	if err2 != nil {
+		c.JSON(http.StatusOK, Response{
+			StatusCode: 1,
+			StatusMsg:  "服务端错误！",
+		})
+		return
+	}
+	if len(comments) == 0 {
+		fmt.Println("该视频还没有用户评论，欢迎评论^_^！")
+		c.JSON(http.StatusOK, CommentListResponse{
+			Response:    Response{0, "该视频还没有用户评论，欢迎评论^_^！"},
+			CommentList: nil,
+		})
+		return
+	}
+	commentList := make([]CommentVo, len(comments))
+	fmt.Println("获取该视频评论列表成功！")
+	for i, _ := range comments {
+		// 按照2006-01-02 15:04:05这个固定来格式化
+		createDate := comments[i].CreateTime.Format("01-02")
+		user := userDaoInstance.QueryUserById(comments[i].UserID)
+		userVo := &UserVo{
+			Id:            user.Id,
+			Name:          user.Name,
+			FollowCount:   user.FollowCount,
+			FollowerCount: user.FollowerCount,
+			IsFollow:      user.IsFollow,
+		}
+		commentList[i] = CommentVo{
+			Id:         comments[i].ID,
+			User:       *userVo,
+			Content:    comments[i].Content,
+			CreateDate: createDate,
+		}
+	}
+	c.JSON(http.StatusOK, CommentListResponse{
+		Response:    Response{0, "获取视频评论列表成功！"},
+		CommentList: commentList,
+	})
 	return
 }
