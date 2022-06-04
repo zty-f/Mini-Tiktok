@@ -1,6 +1,9 @@
 package repository
 
-import "time"
+import (
+	"fmt"
+	"time"
+)
 
 const MaxListLength = 30
 
@@ -28,6 +31,14 @@ func (d *VideoDao) QueryByOwner(ownerId int64) []Video {
 	var videos []Video
 	db.Order("create_time desc").Where("user_id=?", ownerId).Find(&videos)
 	return videos
+}
+
+// QueryVideoIdsByUserId 通过用户id查询该用户发布的所有视频的视频id
+func (d *VideoDao) QueryVideoIdsByUserId(userId int64) []int64 {
+	var ids []int64
+	fmt.Println("通过userId查询所有已发布视频的videoId")
+	db.Table("videos").Select("id").Where("user_id = ?", userId).Find(&ids)
+	return ids
 }
 
 // QueryByIds 通过一组视频id获取对应的视频列表

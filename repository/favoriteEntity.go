@@ -69,3 +69,18 @@ func (f *FavoriteDao) QueryActionTypeByUserIdAndVideoId(userId, videoId int64) i
 	db.Table("favorites").Select("is_favorite").Where("user_id = ? and video_id = ?", userId, videoId).Find(&actionType)
 	return actionType
 }
+
+// QueryFavoriteCountByUserId 根据用户id查询用户点赞视频的数量
+func (f *FavoriteDao) QueryFavoriteCountByUserId(userId int64) int64 {
+	var favoriteCount int64
+	fmt.Println("通过userId查询点赞视频列表的videoId")
+	db.Model(&Favorite{}).Where("user_id = ? and is_favorite = ?", userId, 1).Count(&favoriteCount)
+	return favoriteCount
+}
+
+// QueryTotalFavoriteCountByIds 根据视频id获取这些视频的总点赞数量
+func (f *FavoriteDao) QueryTotalFavoriteCountByIds(ids []int64) int64 {
+	var totalFavoriteCount int64
+	db.Model(&Favorite{}).Where("is_favorite = ? and video_id in ?", 1, ids).Count(&totalFavoriteCount)
+	return totalFavoriteCount
+}

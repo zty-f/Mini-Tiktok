@@ -97,12 +97,21 @@ func Login(c *gin.Context) {
 // UserInfo 获取用户详细信息
 func UserInfo(c *gin.Context) {
 	qid := c.Query("user_id")
-	userId, err := strconv.Atoi(qid)
+	userId, err := strconv.ParseInt(qid, 10, 64)
 	if err != nil {
-		fmt.Printf("Function of atoi in UserInfo fail %v", err)
+		c.JSON(http.StatusOK, Response{
+			StatusCode: 1,
+			StatusMsg:  "服务端错误！",
+		})
+		return
 	}
-	var userEntity = userDaoInstance.QueryUserById(int64(userId))
-	fmt.Println("登录用户: ", userEntity)
+	var userEntity = userDaoInstance.QueryUserById(userId)
+	favoriteCount := favoriteDao.QueryFavoriteCountByUserId(userId)
+	ids := videoDaoInstance.QueryVideoIdsByUserId(userId)
+	totalFavorited := int64(0)
+	if len(ids) != 0 {
+		totalFavorited = favoriteDao.QueryTotalFavoriteCountByIds(ids)
+	}
 	loginUser := &UserVo{
 		Id:              userEntity.Id,
 		Name:            userEntity.Name,
@@ -112,8 +121,8 @@ func UserInfo(c *gin.Context) {
 		Avatar:          "https://s3.bmp.ovh/imgs/2022/05/04/345d42da2a13020b.jpg",
 		Signature:       "冲冲冲，就快要做完了！",
 		BackgroundImage: "https://s3.bmp.ovh/imgs/2022/05/04/29ccf3f609f3e5f2.jpg",
-		TotalFavorited:  99,
-		FavoriteCount:   99,
+		TotalFavorited:  totalFavorited,
+		FavoriteCount:   favoriteCount,
 	}
 	c.JSON(http.StatusOK, UserResp{
 		Response: Response{0, "获取登录用户详细信息成功！"},
