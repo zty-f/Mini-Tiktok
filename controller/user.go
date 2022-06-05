@@ -96,6 +96,7 @@ func Login(c *gin.Context) {
 
 // UserInfo 获取用户详细信息
 func UserInfo(c *gin.Context) {
+	token := c.Query("token")
 	qid := c.Query("user_id")
 	userId, err := strconv.ParseInt(qid, 10, 64)
 	if err != nil {
@@ -105,15 +106,17 @@ func UserInfo(c *gin.Context) {
 		})
 		return
 	}
+	loginUserId := OnlineUser[token].Id
 	var userEntity = userDaoInstance.QueryUserById(userId)
 	favoriteCount := favoriteDao.QueryFavoriteCountByUserId(userId)
 	totalFavorited := videoDaoInstance.QueryTotalFavoriteCountByUserId(userId)
+	isFollow := relationDao.QueryIsFollowByUserIdAndToUserId(loginUserId, userId)
 	loginUser := &UserVo{
 		Id:              userEntity.Id,
 		Name:            userEntity.Name,
 		FollowCount:     userEntity.FollowCount,
 		FollowerCount:   userEntity.FollowerCount,
-		IsFollow:        false,
+		IsFollow:        isFollow,
 		Avatar:          "https://s3.bmp.ovh/imgs/2022/05/04/345d42da2a13020b.jpg",
 		Signature:       "冲冲冲，就快要做完了！",
 		BackgroundImage: "https://s3.bmp.ovh/imgs/2022/05/04/29ccf3f609f3e5f2.jpg",

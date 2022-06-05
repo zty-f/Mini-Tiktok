@@ -59,6 +59,7 @@ func RelationAction(c *gin.Context) {
 }
 
 func RelationFollowList(c *gin.Context) {
+	token := c.Query("token")
 	userId, err1 := strconv.ParseInt(c.Query("user_id"), 10, 64)
 	if err1 != nil {
 		c.JSON(http.StatusOK, Response{
@@ -76,13 +77,14 @@ func RelationFollowList(c *gin.Context) {
 		})
 		return
 	}
+	loginUserId := OnlineUser[token].Id
 	// 根据用户的id查询用户信息
 	users := userDaoInstance.QueryUsersByIds(ids)
 	userList := make([]UserVo, len(users))
 	for i, _ := range users {
 		favoriteCount := favoriteDao.QueryFavoriteCountByUserId(users[i].Id)
 		totalFavorited := videoDaoInstance.QueryTotalFavoriteCountByUserId(users[i].Id)
-		isFollow := relationDao.QueryIsFollowByUserIdAndToUserId(userId, users[i].Id)
+		isFollow := relationDao.QueryIsFollowByUserIdAndToUserId(loginUserId, users[i].Id)
 		userList[i] = UserVo{
 			Id:              users[i].Id,
 			Name:            users[i].Name,
@@ -104,6 +106,7 @@ func RelationFollowList(c *gin.Context) {
 }
 
 func RelationFollowerList(c *gin.Context) {
+	token := c.Query("token")
 	userId, err1 := strconv.ParseInt(c.Query("user_id"), 10, 64)
 	if err1 != nil {
 		c.JSON(http.StatusOK, Response{
@@ -121,13 +124,14 @@ func RelationFollowerList(c *gin.Context) {
 		})
 		return
 	}
+	loginUserId := OnlineUser[token].Id
 	// 根据用户的id查询用户信息
 	users := userDaoInstance.QueryUsersByIds(ids)
 	userList := make([]UserVo, len(users))
 	for i, _ := range users {
 		favoriteCount := favoriteDao.QueryFavoriteCountByUserId(users[i].Id)
 		totalFavorited := videoDaoInstance.QueryTotalFavoriteCountByUserId(users[i].Id)
-		isFollow := relationDao.QueryIsFollowByUserIdAndToUserId(userId, users[i].Id)
+		isFollow := relationDao.QueryIsFollowByUserIdAndToUserId(loginUserId, users[i].Id)
 		userList[i] = UserVo{
 			Id:              users[i].Id,
 			Name:            users[i].Name,

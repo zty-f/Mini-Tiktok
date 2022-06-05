@@ -47,6 +47,7 @@ func FavoriteAction(c *gin.Context) {
 
 // FavoriteList 获取点赞列表
 func FavoriteList(c *gin.Context) {
+	token := c.Query("token")
 	userId, err1 := strconv.ParseInt(c.Query("user_id"), 10, 64)
 	fmt.Printf("获取点赞视频列表userId：%d\n", userId)
 	if err1 != nil {
@@ -64,13 +65,14 @@ func FavoriteList(c *gin.Context) {
 			VideoList: nil,
 		})
 	}
+	loginUserId := OnlineUser[token].Id
 	videoList := videoDaoInstance.QueryByIds(ids)
 	videoListResp := make([]VideoVo, len(videoList))
 	fmt.Println("获取点赞视频列表成功！")
 	for i, _ := range videoList {
 		var isFavorite bool
 		user := userDaoInstance.QueryUserById(videoList[i].UserId)
-		actionType := favoriteDao.QueryActionTypeByUserIdAndVideoId(userId, videoList[i].Id)
+		actionType := favoriteDao.QueryActionTypeByUserIdAndVideoId(loginUserId, videoList[i].Id)
 		if actionType == 1 {
 			isFavorite = true
 		} else {
