@@ -25,6 +25,7 @@ func PublishVideo(c *gin.Context) {
 	title := c.PostForm("title")
 	fmt.Println(token + title)
 	userId := OnlineUser[token].Id
+	//调用service层
 	err := publishService.DoPublishVideo(c, title, userId)
 	if err != nil {
 		c.JSON(http.StatusOK, Response{
@@ -53,6 +54,7 @@ func PublishList(c *gin.Context) {
 		return
 	}
 	loginUserId := OnlineUser[token].Id
+	//调用service层
 	PublishedList, err1 := publishService.DoPublishList(userId, loginUserId)
 	if err1 != nil {
 		c.JSON(http.StatusOK, Response{

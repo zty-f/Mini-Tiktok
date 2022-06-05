@@ -3,12 +3,9 @@ package controller
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"github.com/zty-f/Mini-Tiktok/repository"
 	"net/http"
 	"strconv"
 )
-
-var commentDao = repository.NewCommentDaoInstance()
 
 type CommentResponse struct {
 	Response
