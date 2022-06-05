@@ -37,31 +37,14 @@ func CommentAction(c *gin.Context) {
 	if actionType == 1 {
 		//新增评论
 		commentText := c.Query("comment_text")
-		cid, err3 := commentDao.CreateComment(userId, videoId, commentText)
-		comment, err4 := commentDao.QueryCommentById(cid)
-		if err3 != nil || err4 != nil {
+		//调用service层
+		commentVo, err := commentService.DoAddCommentAction(userId, videoId, commentText)
+		if err != nil {
 			c.JSON(http.StatusOK, Response{
 				StatusCode: 1,
-				StatusMsg:  "服务端错误，新增评论失败！",
+				StatusMsg:  err.Error(),
 			})
 			return
-		}
-		// 按照2006-01-02 15:04:05这个固定来格式化
-		createDate := comment.CreateTime.Format("01-02")
-		fmt.Println(createDate)
-		user := userDaoInstance.QueryUserById(userId)
-		userVo := &UserVo{
-			Id:            user.Id,
-			Name:          user.Name,
-			FollowCount:   user.FollowCount,
-			FollowerCount: user.FollowerCount,
-			IsFollow:      false,
-		}
-		commentVo := &CommentVo{
-			Id:         comment.ID,
-			User:       *userVo,
-			Content:    comment.Content,
-			CreateDate: createDate,
 		}
 		c.JSON(http.StatusOK, CommentResponse{
 			Response: Response{0, "新增评论成功！"},
@@ -70,8 +53,16 @@ func CommentAction(c *gin.Context) {
 	} else {
 		//删除评论
 		commentId, err4 := strconv.ParseInt(c.Query("comment_id"), 10, 64)
-		err5 := commentDao.DeleteComment(commentId, videoId)
-		if err4 != nil || err5 != nil {
+		if err4 != nil {
+			c.JSON(http.StatusOK, Response{
+				StatusCode: 1,
+				StatusMsg:  "服务端错误，评论操作失败！",
+			})
+			return
+		}
+		//调用service层
+		err5 := commentService.DoDelCommentAction(videoId, commentId)
+		if err5 != nil {
 			c.JSON(http.StatusOK, Response{
 				StatusCode: 1,
 				StatusMsg:  "服务端错误，删除评论失败！",
@@ -86,7 +77,6 @@ func CommentAction(c *gin.Context) {
 // CommentList 获取评论列表
 func CommentList(c *gin.Context) {
 	videoId, err1 := strconv.ParseInt(c.Query("video_id"), 10, 64)
-	fmt.Printf("获取评论列表列表的videoId：%d\n", videoId)
 	if err1 != nil {
 		c.JSON(http.StatusOK, Response{
 			StatusCode: 1,
@@ -94,41 +84,16 @@ func CommentList(c *gin.Context) {
 		})
 		return
 	}
-	comments, err2 := commentDao.QueryCommentsByVideoId(videoId)
-	if err2 != nil {
+	token := c.Query("token")
+	loginUserId := OnlineUser[token].Id
+	//调用service层
+	commentList, err := commentService.DoCommentList(loginUserId, videoId)
+	if err != nil {
 		c.JSON(http.StatusOK, Response{
 			StatusCode: 1,
-			StatusMsg:  "服务端错误！",
+			StatusMsg:  err.Error(),
 		})
 		return
-	}
-	if len(comments) == 0 {
-		fmt.Println("该视频还没有用户评论，欢迎评论^_^！")
-		c.JSON(http.StatusOK, CommentListResponse{
-			Response:    Response{0, "该视频还没有用户评论，欢迎评论^_^！"},
-			CommentList: nil,
-		})
-		return
-	}
-	commentList := make([]CommentVo, len(comments))
-	fmt.Println("获取该视频评论列表成功！")
-	for i, _ := range comments {
-		// 按照2006-01-02 15:04:05这个固定来格式化
-		createDate := comments[i].CreateTime.Format("01-02")
-		user := userDaoInstance.QueryUserById(comments[i].UserID)
-		userVo := &UserVo{
-			Id:            user.Id,
-			Name:          user.Name,
-			FollowCount:   user.FollowCount,
-			FollowerCount: user.FollowerCount,
-			IsFollow:      false,
-		}
-		commentList[i] = CommentVo{
-			Id:         comments[i].ID,
-			User:       *userVo,
-			Content:    comments[i].Content,
-			CreateDate: createDate,
-		}
 	}
 	c.JSON(http.StatusOK, CommentListResponse{
 		Response:    Response{0, "获取视频评论列表成功！"},

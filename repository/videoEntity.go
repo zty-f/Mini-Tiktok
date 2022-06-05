@@ -46,10 +46,12 @@ func (d *VideoDao) QueryTotalFavoriteCountByUserId(userId int64) (int64, error) 
 }
 
 // QueryByIds 通过一组视频id获取对应的视频列表
-func (d *VideoDao) QueryByIds(ids []int64) []Video {
+func (d *VideoDao) QueryByIds(ids []int64) ([]Video, error) {
 	var videos []Video
-	db.Find(&videos, ids)
-	return videos
+	if err := db.Find(&videos, ids).Error; err != nil {
+		return nil, err
+	}
+	return videos, nil
 }
 
 // CreateVideoRecord 通过传入参数创建新的视频记录
