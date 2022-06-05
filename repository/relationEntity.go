@@ -62,14 +62,16 @@ func (r *RelationDao) DeleteRelation(userId, toUserId int64) error {
 }
 
 // QueryIsFollowByUserIdAndToUserId 通过登录用户id和视频发布者id获取该登录用户是否关注视频所有者
-func (r *RelationDao) QueryIsFollowByUserIdAndToUserId(userId, toUserId int64) bool {
+func (r *RelationDao) QueryIsFollowByUserIdAndToUserId(userId, toUserId int64) (bool, error) {
 	var count int64
 	fmt.Println("通过userId+toUserId查询关注状态")
-	db.Table("relations").Select("count(1)").Where("user_id = ? and following_id = ?", userId, toUserId).Limit(1).Count(&count)
-	if count == 0 {
-		return false
+	if err := db.Table("relations").Select("count(1)").Where("user_id = ? and following_id = ?", userId, toUserId).Limit(1).Count(&count).Error; err != nil {
+		return false, err
 	}
-	return true
+	if count == 0 {
+		return false, nil
+	}
+	return true, nil
 }
 
 // QueryFollowIdsByUserId 通过用户id查询该用户关注的所有用户的id

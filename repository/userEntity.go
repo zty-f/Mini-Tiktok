@@ -1,7 +1,5 @@
 package repository
 
-import "fmt"
-
 type User struct {
 	Id            int64  `gorm:"primary_key"`
 	Name          string `gorm:"column:name;size:32;not null"`
@@ -19,14 +17,16 @@ func NewUserDaoInstance() *UserDao {
 }
 
 // QueryUserById 通过用户id查询详细的用户信息
-func (u *UserDao) QueryUserById(userId int64) *User {
+func (u *UserDao) QueryUserById(userId int64) (*User, error) {
 	var user = &User{}
-	db.First(user, userId)
-	return user
+	if err := db.First(user, userId).Error; err != nil {
+		return nil, err
+	}
+	return user, nil
 }
 
 // CreateByNameAndPassword 通过用户名和密码创建新用户
-func (u *UserDao) CreateByNameAndPassword(name, password string) *User {
+func (u *UserDao) CreateByNameAndPassword(name, password string) (*User, error) {
 	var user = &User{
 		Id:            0,
 		Name:          name,
@@ -34,16 +34,19 @@ func (u *UserDao) CreateByNameAndPassword(name, password string) *User {
 		FollowCount:   0,
 		FollowerCount: 0,
 	}
-	db.Create(user)
-	fmt.Println(user.Id)
-	return user
+	if err := db.Create(user).Error; err != nil {
+		return nil, err
+	}
+	return user, nil
 }
 
 // QueryLoginInfo 通过用户名和密码查询是否包含此用户
-func (u *UserDao) QueryLoginInfo(name string, password string) *User {
+func (u *UserDao) QueryLoginInfo(name string, password string) (*User, error) {
 	var user = &User{}
-	db.Where("name = ? and password = ?", name, password).Find(user)
-	return user
+	if err := db.Where("name = ? and password = ?", name, password).Find(user).Error; err != nil {
+		return nil, err
+	}
+	return user, nil
 }
 
 // QueryUsersByIds 通过一组用户id查询一组用户信息

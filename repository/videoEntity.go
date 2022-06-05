@@ -34,11 +34,13 @@ func (d *VideoDao) QueryByOwner(ownerId int64) []Video {
 }
 
 // QueryTotalFavoriteCountByUserId 通过用户id查询该用户发布的所有视频总获赞数量
-func (d *VideoDao) QueryTotalFavoriteCountByUserId(userId int64) int64 {
+func (d *VideoDao) QueryTotalFavoriteCountByUserId(userId int64) (int64, error) {
 	var totalFavoriteCount int64
 	fmt.Println("通过userId查询所有已发布视频的总获赞数")
-	db.Table("videos").Select("sum(favorite_count) as total").Where("user_id = ?", userId).Take(&totalFavoriteCount)
-	return totalFavoriteCount
+	if err := db.Table("videos").Select("sum(favorite_count) as total").Where("user_id = ?", userId).Take(&totalFavoriteCount).Error; err != nil {
+		return 0, err
+	}
+	return totalFavoriteCount, nil
 }
 
 // QueryByIds 通过一组视频id获取对应的视频列表
