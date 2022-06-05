@@ -63,8 +63,10 @@ func (d *VideoDao) CreateVideoRecord(userId int64, playURL string, coverURL stri
 }
 
 // QueryFeedFlow 通过当前时间查询这个时间前新发布的50条视频，逆序输出
-func (d *VideoDao) QueryFeedFlow(latestTime int64) []Video {
+func (d *VideoDao) QueryFeedFlow(latestTime string) ([]Video, error) {
 	var videos []Video
-	db.Order("create_time desc").Limit(MaxListLength).Find(&videos)
-	return videos
+	if err := db.Order("create_time desc").Limit(MaxListLength).Find(&videos).Error; err != nil {
+		return nil, err
+	}
+	return videos, nil
 }

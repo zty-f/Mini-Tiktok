@@ -63,11 +63,13 @@ func (f *FavoriteDao) QueryVideosIdByUserId(userId int64) []int64 {
 }
 
 // QueryActionTypeByUserIdAndVideoId 通过用户id和视频id获取该用户对于这个视频是否点赞的状态码
-func (f *FavoriteDao) QueryActionTypeByUserIdAndVideoId(userId, videoId int64) int32 {
+func (f *FavoriteDao) QueryActionTypeByUserIdAndVideoId(userId, videoId int64) (int32, error) {
 	var actionType int32
 	fmt.Println("通过userId+videoId查询点赞状态")
-	db.Table("favorites").Select("is_favorite").Where("user_id = ? and video_id = ?", userId, videoId).Find(&actionType)
-	return actionType
+	if err := db.Table("favorites").Select("is_favorite").Where("user_id = ? and video_id = ?", userId, videoId).Find(&actionType).Error; err != nil {
+		return 0, err
+	}
+	return actionType, nil
 }
 
 // QueryFavoriteCountByUserId 根据用户id查询用户点赞视频的数量

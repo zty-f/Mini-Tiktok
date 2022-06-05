@@ -5,7 +5,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/zty-f/Mini-Tiktok/repository"
 	"net/http"
-	"strconv"
 	"time"
 )
 
@@ -19,11 +18,10 @@ type FeedResponse struct {
 
 // Feed 获取视频流
 func Feed(c *gin.Context) {
-	strTime := c.Query("latest_time")
-	latestTime, err := strconv.ParseInt(strTime, 10, 64)
-	if err != nil {
+	latestTime := c.Query("latest_time")
+	if latestTime == "" {
 		fmt.Printf("wrong parse string result is: %v", latestTime)
-		latestTime = time.Now().Unix()
+		latestTime = time.Now().String()
 	}
 	var loginUser UserVo
 	token := c.Query("token")
@@ -32,48 +30,19 @@ func Feed(c *gin.Context) {
 	} else {
 		loginUser = *OnlineUser[token]
 	}
-	videoList := videoDaoInstance.QueryFeedFlow(latestTime)
-	videoListResp := make([]VideoVo, len(videoList))
-	fmt.Println("获取视频流成功！")
-	for i, _ := range videoList {
-		var isFavorite bool
-		user := userDaoInstance.QueryUserById(videoList[i].UserId)
-		actionType := favoriteDao.QueryActionTypeByUserIdAndVideoId(loginUser.Id, videoList[i].Id)
-		fmt.Println(actionType)
-		if actionType == 1 {
-			isFavorite = true
-		} else {
-			isFavorite = false
-		}
-		favoriteCount := favoriteDao.QueryFavoriteCountByUserId(videoList[i].UserId)
-		totalFavorited := videoDaoInstance.QueryTotalFavoriteCountByUserId(videoList[i].UserId)
-		isFollow := relationDao.QueryIsFollowByUserIdAndToUserId(loginUser.Id, videoList[i].UserId)
-		tmpUser := &UserVo{
-			Id:              user.Id,
-			Name:            user.Name,
-			FollowCount:     user.FollowCount,
-			FollowerCount:   user.FollowerCount,
-			IsFollow:        isFollow,
-			Avatar:          "https://s3.bmp.ovh/imgs/2022/05/04/345d42da2a13020b.jpg",
-			Signature:       "冲冲冲，就快要做完了！",
-			BackgroundImage: "https://s3.bmp.ovh/imgs/2022/05/04/29ccf3f609f3e5f2.jpg",
-			TotalFavorited:  totalFavorited,
-			FavoriteCount:   favoriteCount,
-		}
-		videoListResp[i] = VideoVo{
-			Id:            videoList[i].Id,
-			Author:        *tmpUser,
-			PlayUrl:       videoList[i].PlayUrl,
-			CoverUrl:      videoList[i].CoverUrl,
-			FavoriteCount: videoList[i].FavoriteCount,
-			CommentCount:  videoList[i].CommentCount,
-			IsFavorite:    isFavorite,
-			Title:         videoList[i].Title,
-		}
+	// 调用service层
+	videoListResp, err := feedService.DoFeed(loginUser.Id, latestTime)
+	if err != nil {
+		c.JSON(http.StatusOK, Response{
+			StatusCode: 1,
+			StatusMsg:  "服务端错误！",
+		})
+		return
 	}
 	c.JSON(http.StatusOK, FeedResponse{
 		Response:  Response{StatusCode: 0, StatusMsg: "获取视频流成功！"},
 		VideoList: videoListResp,
 		NextTime:  time.Now().Unix(),
 	})
+	return
 }
