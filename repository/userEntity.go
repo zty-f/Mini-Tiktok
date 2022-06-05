@@ -50,8 +50,10 @@ func (u *UserDao) QueryLoginInfo(name string, password string) (*User, error) {
 }
 
 // QueryUsersByIds 通过一组用户id查询一组用户信息
-func (u *UserDao) QueryUsersByIds(ids []int64) []User {
+func (u *UserDao) QueryUsersByIds(ids []int64) ([]User, error) {
 	var users []User
-	db.Find(&users, ids)
-	return users
+	if err := db.Find(&users, ids).Error; err != nil {
+		return nil, err
+	}
+	return users, nil
 }

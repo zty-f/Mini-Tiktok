@@ -75,17 +75,21 @@ func (r *RelationDao) QueryIsFollowByUserIdAndToUserId(userId, toUserId int64) (
 }
 
 // QueryFollowIdsByUserId 通过用户id查询该用户关注的所有用户的id
-func (r *RelationDao) QueryFollowIdsByUserId(userId int64) []int64 {
+func (r *RelationDao) QueryFollowIdsByUserId(userId int64) ([]int64, error) {
 	var ids []int64
 	fmt.Println("通过用户id查询该用户关注的所有用户的id")
-	db.Table("relations").Select("following_id").Where("user_id = ?", userId).Find(&ids)
-	return ids
+	if err := db.Table("relations").Select("following_id").Where("user_id = ?", userId).Find(&ids).Error; err != nil {
+		return nil, err
+	}
+	return ids, nil
 }
 
 // QueryFollowerIdsByUserId 通过用户id查询该用户所有粉丝的用户id
-func (r *RelationDao) QueryFollowerIdsByUserId(userId int64) []int64 {
+func (r *RelationDao) QueryFollowerIdsByUserId(userId int64) ([]int64, error) {
 	var ids []int64
 	fmt.Println("通过用户id查询该用户所有粉丝的id")
-	db.Table("relations").Select("user_id").Where("following_id = ?", userId).Find(&ids)
-	return ids
+	if err := db.Table("relations").Select("user_id").Where("following_id = ?", userId).Find(&ids).Error; err != nil {
+		return nil, err
+	}
+	return ids, nil
 }
