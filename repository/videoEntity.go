@@ -27,10 +27,12 @@ func NewVideoDaoInstance() *VideoDao {
 }
 
 // QueryByOwner 通过用户id查询该用户发布的所有视频
-func (d *VideoDao) QueryByOwner(ownerId int64) []Video {
+func (d *VideoDao) QueryByOwner(ownerId int64) ([]Video, error) {
 	var videos []Video
-	db.Order("create_time desc").Where("user_id=?", ownerId).Find(&videos)
-	return videos
+	if err := db.Order("create_time desc").Where("user_id=?", ownerId).Find(&videos).Error; err != nil {
+		return nil, err
+	}
+	return videos, nil
 }
 
 // QueryTotalFavoriteCountByUserId 通过用户id查询该用户发布的所有视频总获赞数量
@@ -58,7 +60,9 @@ func (d *VideoDao) CreateVideoRecord(userId int64, playURL string, coverURL stri
 		Title:    title,
 		UserId:   userId,
 	}
-	db.Create(video)
+	if err := db.Create(video).Error; err != nil {
+		return err
+	}
 	return nil
 }
 
