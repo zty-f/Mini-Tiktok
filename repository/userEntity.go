@@ -45,3 +45,10 @@ func (u *UserDao) QueryLoginInfo(name string, password string) *User {
 	db.Where("name = ? and password = ?", name, password).Find(user)
 	return user
 }
+
+// QueryUsersByIds 通过一组用户id查询一组用户信息
+func (u *UserDao) QueryUsersByIds(ids []int64) []User {
+	var users []User
+	db.Find(&users, ids)
+	return users
+}

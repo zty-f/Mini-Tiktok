@@ -71,3 +71,11 @@ func (r *RelationDao) QueryIsFollowByUserIdAndToUserId(userId, toUserId int64) b
 	}
 	return true
 }
+
+// QueryFollowIdsByUserId 通过用户id查询该用户关注的所有用户的id
+func (r *RelationDao) QueryFollowIdsByUserId(userId int64) []int64 {
+	var ids []int64
+	fmt.Println("通过用户id查询该用户关注的所有用户的id")
+	db.Table("relations").Select("following_id").Where("user_id = ?", userId).Find(&ids)
+	return ids
+}
