@@ -1,10 +1,12 @@
 package controller
 
 import (
+	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"github.com/zty-f/Mini-Tiktok/common"
 	"net/http"
 	"strconv"
+	"time"
 )
 
 var OnlineUser = map[string]*common.UserVo{}
@@ -60,9 +62,18 @@ func Login(c *gin.Context) {
 		FollowerCount: user.FollowerCount,
 		IsFollow:      false,
 	}
-
 	//加入到online表里
 	OnlineUser[token] = loginUser
+	// token做键，用户信息做值存入redis
+	value, err5 := json.Marshal(loginUser)
+	if err5 != nil {
+		c.JSON(http.StatusOK, RegisterResp{
+			Response: common.Response{StatusCode: 1,
+				StatusMsg: "服务端错误！"},
+		})
+		return
+	}
+	Rd.Set(Ctx, token, string(value), time.Hour*24)
 	c.JSON(http.StatusOK, RegisterResp{
 		Response: common.Response{0, "登录成功！"},
 		UserId:   user.Id,
