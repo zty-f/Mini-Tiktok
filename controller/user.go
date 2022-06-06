@@ -94,7 +94,7 @@ func UserInfo(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, UserResp{
-		Response: common.Response{0, "获取登录用户详细信息成功！"},
+		Response: common.Response{0, "获取用户详细信息成功！"},
 		User:     *userInfo,
 	})
 	return
