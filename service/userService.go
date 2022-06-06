@@ -3,7 +3,7 @@ package service
 import (
 	"errors"
 	"fmt"
-	"github.com/zty-f/Mini-Tiktok/controller"
+	"github.com/zty-f/Mini-Tiktok/common"
 	"github.com/zty-f/Mini-Tiktok/repository"
 	"strings"
 )
@@ -50,7 +50,7 @@ func (u *UserService) DoLogin(userName, password string) (*repository.User, stri
 }
 
 // DoUserInfo 获取用户信息
-func (u *UserService) DoUserInfo(userId, loginUserId int64) (*controller.UserVo, error) {
+func (u *UserService) DoUserInfo(userId, loginUserId int64) (*common.UserVo, error) {
 	user, err := userDaoInstance.QueryUserById(userId)
 	if err != nil {
 		return nil, err
@@ -67,7 +67,7 @@ func (u *UserService) DoUserInfo(userId, loginUserId int64) (*controller.UserVo,
 	if err3 != nil {
 		return nil, err3
 	}
-	loginUser := &controller.UserVo{
+	loginUser := &common.UserVo{
 		Id:              user.Id,
 		Name:            user.Name,
 		FollowCount:     user.FollowCount,

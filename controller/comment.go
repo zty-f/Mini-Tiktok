@@ -3,18 +3,19 @@ package controller
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/zty-f/Mini-Tiktok/common"
 	"net/http"
 	"strconv"
 )
 
 type CommentResponse struct {
-	Response
-	Comment CommentVo `json:"comment"`
+	common.Response
+	Comment common.CommentVo `json:"comment"`
 }
 
 type CommentListResponse struct {
-	Response
-	CommentList []CommentVo `json:"comment_list,omitempty"`
+	common.Response
+	CommentList []common.CommentVo `json:"comment_list,omitempty"`
 }
 
 // CommentAction 评论功能
@@ -23,7 +24,7 @@ func CommentAction(c *gin.Context) {
 	videoId, err1 := strconv.ParseInt(c.Query("video_id"), 10, 64)
 	actionType, err2 := strconv.ParseInt(c.Query("action_type"), 10, 32)
 	if err1 != nil || err2 != nil {
-		c.JSON(http.StatusOK, Response{
+		c.JSON(http.StatusOK, common.Response{
 			StatusCode: 1,
 			StatusMsg:  "服务端错误，评论操作失败！",
 		})
@@ -37,21 +38,21 @@ func CommentAction(c *gin.Context) {
 		//调用service层
 		commentVo, err := commentService.DoAddCommentAction(userId, videoId, commentText)
 		if err != nil {
-			c.JSON(http.StatusOK, Response{
+			c.JSON(http.StatusOK, common.Response{
 				StatusCode: 1,
 				StatusMsg:  err.Error(),
 			})
 			return
 		}
 		c.JSON(http.StatusOK, CommentResponse{
-			Response: Response{0, "新增评论成功！"},
+			Response: common.Response{0, "新增评论成功！"},
 			Comment:  *commentVo,
 		})
 	} else {
 		//删除评论
 		commentId, err4 := strconv.ParseInt(c.Query("comment_id"), 10, 64)
 		if err4 != nil {
-			c.JSON(http.StatusOK, Response{
+			c.JSON(http.StatusOK, common.Response{
 				StatusCode: 1,
 				StatusMsg:  "服务端错误，评论操作失败！",
 			})
@@ -60,13 +61,13 @@ func CommentAction(c *gin.Context) {
 		//调用service层
 		err5 := commentService.DoDelCommentAction(videoId, commentId)
 		if err5 != nil {
-			c.JSON(http.StatusOK, Response{
+			c.JSON(http.StatusOK, common.Response{
 				StatusCode: 1,
 				StatusMsg:  "服务端错误，删除评论失败！",
 			})
 			return
 		}
-		c.JSON(http.StatusOK, Response{0, "删除评论成功！"})
+		c.JSON(http.StatusOK, common.Response{0, "删除评论成功！"})
 	}
 	return
 }
@@ -75,7 +76,7 @@ func CommentAction(c *gin.Context) {
 func CommentList(c *gin.Context) {
 	videoId, err1 := strconv.ParseInt(c.Query("video_id"), 10, 64)
 	if err1 != nil {
-		c.JSON(http.StatusOK, Response{
+		c.JSON(http.StatusOK, common.Response{
 			StatusCode: 1,
 			StatusMsg:  "服务端错误！",
 		})
@@ -86,14 +87,14 @@ func CommentList(c *gin.Context) {
 	//调用service层
 	commentList, err := commentService.DoCommentList(loginUserId, videoId)
 	if err != nil {
-		c.JSON(http.StatusOK, Response{
+		c.JSON(http.StatusOK, common.Response{
 			StatusCode: 1,
 			StatusMsg:  err.Error(),
 		})
 		return
 	}
 	c.JSON(http.StatusOK, CommentListResponse{
-		Response:    Response{0, "获取视频评论列表成功！"},
+		Response:    common.Response{0, "获取视频评论列表成功！"},
 		CommentList: commentList,
 	})
 	return

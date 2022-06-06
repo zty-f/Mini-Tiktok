@@ -2,7 +2,7 @@ package service
 
 import (
 	"errors"
-	"github.com/zty-f/Mini-Tiktok/controller"
+	"github.com/zty-f/Mini-Tiktok/common"
 )
 
 type RelationService struct {
@@ -34,7 +34,7 @@ func (r *RelationService) DoDelRelationAction(userId, toUserId int64) error {
 }
 
 // DoRelationFollowList 获取关注列表
-func (r *RelationService) DoRelationFollowList(userId, loginUserId int64) ([]controller.UserVo, error) {
+func (r *RelationService) DoRelationFollowList(userId, loginUserId int64) ([]common.UserVo, error) {
 	// 根据用户id查询该用户关注的所有用户的id
 	ids, err := relationDaoInstance.QueryFollowIdsByUserId(userId)
 	if err != nil {
@@ -48,7 +48,7 @@ func (r *RelationService) DoRelationFollowList(userId, loginUserId int64) ([]con
 	if err4 != nil {
 		return nil, err4
 	}
-	userList := make([]controller.UserVo, len(users))
+	userList := make([]common.UserVo, len(users))
 	for i, _ := range users {
 		favoriteCount, err1 := favoriteDaoInstance.QueryFavoriteCountByUserId(users[i].Id)
 		if err1 != nil {
@@ -62,7 +62,7 @@ func (r *RelationService) DoRelationFollowList(userId, loginUserId int64) ([]con
 		if err3 != nil {
 			return nil, err3
 		}
-		userList[i] = controller.UserVo{
+		userList[i] = common.UserVo{
 			Id:              users[i].Id,
 			Name:            users[i].Name,
 			FollowCount:     users[i].FollowCount,
@@ -79,7 +79,7 @@ func (r *RelationService) DoRelationFollowList(userId, loginUserId int64) ([]con
 }
 
 // DoRelationFollowerList 获取粉丝列表
-func (r *RelationService) DoRelationFollowerList(userId, loginUserId int64) ([]controller.UserVo, error) {
+func (r *RelationService) DoRelationFollowerList(userId, loginUserId int64) ([]common.UserVo, error) {
 	ids, err := relationDaoInstance.QueryFollowerIdsByUserId(userId)
 	if err != nil {
 		return nil, err
@@ -92,7 +92,7 @@ func (r *RelationService) DoRelationFollowerList(userId, loginUserId int64) ([]c
 	if err1 != nil {
 		return nil, err1
 	}
-	userList := make([]controller.UserVo, len(users))
+	userList := make([]common.UserVo, len(users))
 	for i, _ := range users {
 		favoriteCount, err2 := favoriteDaoInstance.QueryFavoriteCountByUserId(users[i].Id)
 		if err2 != nil {
@@ -106,7 +106,7 @@ func (r *RelationService) DoRelationFollowerList(userId, loginUserId int64) ([]c
 		if err4 != nil {
 			return nil, err4
 		}
-		userList[i] = controller.UserVo{
+		userList[i] = common.UserVo{
 			Id:              users[i].Id,
 			Name:            users[i].Name,
 			FollowCount:     users[i].FollowCount,

@@ -3,7 +3,7 @@ package service
 import (
 	"errors"
 	"fmt"
-	"github.com/zty-f/Mini-Tiktok/controller"
+	"github.com/zty-f/Mini-Tiktok/common"
 )
 
 type CommentService struct {
@@ -15,7 +15,7 @@ func NewCommentServiceInstance() *CommentService {
 }
 
 // DoAddCommentAction 新增评论功能
-func (c *CommentService) DoAddCommentAction(loginUserId, videoId int64, commentText string) (*controller.CommentVo, error) {
+func (c *CommentService) DoAddCommentAction(loginUserId, videoId int64, commentText string) (*common.CommentVo, error) {
 	//新增评论
 	cid, err3 := commentDaoInstance.CreateComment(loginUserId, videoId, commentText)
 	if err3 != nil {
@@ -36,14 +36,14 @@ func (c *CommentService) DoAddCommentAction(loginUserId, videoId int64, commentT
 	if err1 != nil {
 		return nil, err1
 	}
-	userVo := &controller.UserVo{
+	userVo := &common.UserVo{
 		Id:            user.Id,
 		Name:          user.Name,
 		FollowCount:   user.FollowCount,
 		FollowerCount: user.FollowerCount,
 		IsFollow:      isFollow,
 	}
-	commentVo := &controller.CommentVo{
+	commentVo := &common.CommentVo{
 		Id:         comment.ID,
 		User:       *userVo,
 		Content:    comment.Content,
@@ -63,7 +63,7 @@ func (c *CommentService) DoDelCommentAction(videoId, commentId int64) error {
 }
 
 // DoCommentList 获取评论列表
-func (c *CommentService) DoCommentList(loginUserId, videoId int64) ([]controller.CommentVo, error) {
+func (c *CommentService) DoCommentList(loginUserId, videoId int64) ([]common.CommentVo, error) {
 	fmt.Printf("获取评论列表列表的videoId：%d\n", videoId)
 	comments, err2 := commentDaoInstance.QueryCommentsByVideoId(videoId)
 	if err2 != nil {
@@ -73,7 +73,7 @@ func (c *CommentService) DoCommentList(loginUserId, videoId int64) ([]controller
 		fmt.Println("该视频还没有用户评论，欢迎评论^_^！")
 		return nil, errors.New("该视频还没有用户评论，欢迎评论^_^！")
 	}
-	commentList := make([]controller.CommentVo, len(comments))
+	commentList := make([]common.CommentVo, len(comments))
 	fmt.Println("获取该视频评论列表成功！")
 	for i, _ := range comments {
 		// 按照2006-01-02 15:04:05这个固定来格式化
@@ -86,14 +86,14 @@ func (c *CommentService) DoCommentList(loginUserId, videoId int64) ([]controller
 		if err4 != nil {
 			return nil, err4
 		}
-		userVo := &controller.UserVo{
+		userVo := &common.UserVo{
 			Id:            user.Id,
 			Name:          user.Name,
 			FollowCount:   user.FollowCount,
 			FollowerCount: user.FollowerCount,
 			IsFollow:      isFollow,
 		}
-		commentList[i] = controller.CommentVo{
+		commentList[i] = common.CommentVo{
 			Id:         comments[i].ID,
 			User:       *userVo,
 			Content:    comments[i].Content,

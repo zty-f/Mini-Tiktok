@@ -2,7 +2,7 @@ package service
 
 import (
 	"fmt"
-	"github.com/zty-f/Mini-Tiktok/controller"
+	"github.com/zty-f/Mini-Tiktok/common"
 )
 
 type FeedService struct {
@@ -14,12 +14,12 @@ func NewFeedServiceInstance() *FeedService {
 }
 
 // DoFeed 获取视频流
-func (f *FeedService) DoFeed(loginUserId int64, latestTime string) ([]controller.VideoVo, error) {
+func (f *FeedService) DoFeed(loginUserId int64, latestTime string) ([]common.VideoVo, error) {
 	videoList, err := videoDaoInstance.QueryFeedFlow(latestTime)
 	if err != nil {
 		return nil, err
 	}
-	videoListResp := make([]controller.VideoVo, len(videoList))
+	videoListResp := make([]common.VideoVo, len(videoList))
 	fmt.Println("获取视频流成功！")
 	for i, _ := range videoList {
 		var isFavorite bool
@@ -49,7 +49,7 @@ func (f *FeedService) DoFeed(loginUserId int64, latestTime string) ([]controller
 		if err5 != nil {
 			return nil, err5
 		}
-		tmpUser := &controller.UserVo{
+		tmpUser := &common.UserVo{
 			Id:              user.Id,
 			Name:            user.Name,
 			FollowCount:     user.FollowCount,
@@ -61,7 +61,7 @@ func (f *FeedService) DoFeed(loginUserId int64, latestTime string) ([]controller
 			TotalFavorited:  totalFavorited,
 			FavoriteCount:   favoriteCount,
 		}
-		videoListResp[i] = controller.VideoVo{
+		videoListResp[i] = common.VideoVo{
 			Id:            videoList[i].Id,
 			Author:        *tmpUser,
 			PlayUrl:       videoList[i].PlayUrl,

@@ -3,7 +3,7 @@ package service
 import (
 	"errors"
 	"fmt"
-	"github.com/zty-f/Mini-Tiktok/controller"
+	"github.com/zty-f/Mini-Tiktok/common"
 )
 
 type FavoriteService struct {
@@ -25,7 +25,7 @@ func (f *FavoriteService) DoFavoriteAction(userId, videoId int64, actionType int
 }
 
 // DoFavoriteList 获取点赞列表
-func (f *FavoriteService) DoFavoriteList(userId, loginUserId int64) ([]controller.VideoVo, error) {
+func (f *FavoriteService) DoFavoriteList(userId, loginUserId int64) ([]common.VideoVo, error) {
 	fmt.Printf("获取点赞视频列表userId：%d\n", userId)
 	ids, err := favoriteDaoInstance.QueryVideosIdByUserId(userId)
 	if err != nil {
@@ -38,7 +38,7 @@ func (f *FavoriteService) DoFavoriteList(userId, loginUserId int64) ([]controlle
 	if err1 != nil {
 		return nil, err1
 	}
-	videoListResp := make([]controller.VideoVo, len(videoList))
+	videoListResp := make([]common.VideoVo, len(videoList))
 	fmt.Println("获取点赞视频列表成功！")
 	for i, _ := range videoList {
 		var isFavorite bool
@@ -59,14 +59,14 @@ func (f *FavoriteService) DoFavoriteList(userId, loginUserId int64) ([]controlle
 		} else {
 			isFavorite = false
 		}
-		tmpUser := &controller.UserVo{
+		tmpUser := &common.UserVo{
 			Id:            user.Id,
 			Name:          user.Name,
 			FollowCount:   user.FollowCount,
 			FollowerCount: user.FollowerCount,
 			IsFollow:      isFollow,
 		}
-		videoListResp[i] = controller.VideoVo{
+		videoListResp[i] = common.VideoVo{
 			Id:            videoList[i].Id,
 			Author:        *tmpUser,
 			PlayUrl:       videoList[i].PlayUrl,

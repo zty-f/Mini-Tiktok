@@ -6,7 +6,7 @@ import (
 	"github.com/disintegration/imaging"
 	"github.com/gin-gonic/gin"
 	ffmpeg "github.com/u2takey/ffmpeg-go"
-	"github.com/zty-f/Mini-Tiktok/controller"
+	"github.com/zty-f/Mini-Tiktok/common"
 	"io"
 	"os"
 	"path/filepath"
@@ -68,7 +68,7 @@ func (p *PublishService) DoPublishVideo(c *gin.Context, title string, userId int
 }
 
 // DoPublishList 发布视频列表
-func (p *PublishService) DoPublishList(userId, loginUserId int64) ([]controller.VideoVo, error) {
+func (p *PublishService) DoPublishList(userId, loginUserId int64) ([]common.VideoVo, error) {
 	videos, err := videoDaoInstance.QueryByOwner(userId)
 	if err != nil {
 		return nil, err
@@ -81,14 +81,14 @@ func (p *PublishService) DoPublishList(userId, loginUserId int64) ([]controller.
 	if err3 != nil {
 		return nil, err3
 	}
-	curUser := &controller.UserVo{
+	curUser := &common.UserVo{
 		Id:            user.Id,
 		Name:          user.Name,
 		FollowCount:   user.FollowCount,
 		FollowerCount: user.FollowerCount,
 		IsFollow:      isFollow,
 	}
-	var PublishedList = make([]controller.VideoVo, len(videos))
+	var PublishedList = make([]common.VideoVo, len(videos))
 	for i, _ := range PublishedList {
 		var isFavorite bool
 		actionType, err2 := favoriteDaoInstance.QueryActionTypeByUserIdAndVideoId(loginUserId, videos[i].Id)
@@ -100,7 +100,7 @@ func (p *PublishService) DoPublishList(userId, loginUserId int64) ([]controller.
 		} else {
 			isFavorite = false
 		}
-		PublishedList[i] = controller.VideoVo{
+		PublishedList[i] = common.VideoVo{
 			Id:            videos[i].Id,
 			Author:        *curUser,
 			PlayUrl:       videos[i].PlayUrl,
