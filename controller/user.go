@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/zty-f/Mini-Tiktok/common"
 	"net/http"
@@ -60,6 +61,7 @@ func Login(c *gin.Context) {
 		FollowerCount: user.FollowerCount,
 		IsFollow:      false,
 	}
+	fmt.Println("登录token：" + token)
 	//加入到online表里
 	OnlineUser[token] = loginUser
 	// token做键，用户信息做值存入redis

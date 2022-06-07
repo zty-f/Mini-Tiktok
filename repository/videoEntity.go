@@ -35,6 +35,15 @@ func (d *VideoDao) QueryByOwner(ownerId int64) ([]Video, error) {
 	return videos, nil
 }
 
+// QueryPublishCountByUserId 通过用户id查询该用户发布的视频数量
+func (d *VideoDao) QueryPublishCountByUserId(userId int64) (int64, error) {
+	var count int64
+	if err := db.Table("videos").Where("user_id=?", userId).Count(&count).Error; err != nil {
+		return 0, err
+	}
+	return count, nil
+}
+
 // QueryTotalFavoriteCountByUserId 通过用户id查询该用户发布的所有视频总获赞数量
 func (d *VideoDao) QueryTotalFavoriteCountByUserId(userId int64) (int64, error) {
 	var totalFavoriteCount int64

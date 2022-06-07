@@ -41,9 +41,14 @@ func (f *FeedService) DoFeed(loginUserId int64, latestTime string) ([]common.Vid
 		if err3 != nil {
 			return nil, err3
 		}
-		totalFavorited, err4 := videoDaoInstance.QueryTotalFavoriteCountByUserId(videoList[i].UserId)
-		if err4 != nil {
+		var totalFavorited = int64(0)
+		if count, err4 := videoDaoInstance.QueryPublishCountByUserId(videoList[i].UserId); err4 != nil {
 			return nil, err4
+		} else if count > 0 {
+			totalFavorited, err = videoDaoInstance.QueryTotalFavoriteCountByUserId(videoList[i].UserId)
+		}
+		if err != nil {
+			return nil, err
 		}
 		isFollow, err5 := relationDaoInstance.QueryIsFollowByUserIdAndToUserId(loginUserId, videoList[i].UserId)
 		if err5 != nil {

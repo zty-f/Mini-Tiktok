@@ -54,9 +54,14 @@ func (r *RelationService) DoRelationFollowList(userId, loginUserId int64) ([]com
 		if err1 != nil {
 			return nil, err1
 		}
-		totalFavorited, err2 := videoDaoInstance.QueryTotalFavoriteCountByUserId(users[i].Id)
-		if err2 != nil {
+		var totalFavorited = int64(0)
+		if count, err2 := videoDaoInstance.QueryPublishCountByUserId(users[i].Id); err2 != nil {
 			return nil, err2
+		} else if count > 0 {
+			totalFavorited, err = videoDaoInstance.QueryTotalFavoriteCountByUserId(users[i].Id)
+		}
+		if err != nil {
+			return nil, err
 		}
 		isFollow, err3 := relationDaoInstance.QueryIsFollowByUserIdAndToUserId(loginUserId, users[i].Id)
 		if err3 != nil {
@@ -98,9 +103,14 @@ func (r *RelationService) DoRelationFollowerList(userId, loginUserId int64) ([]c
 		if err2 != nil {
 			return nil, err2
 		}
-		totalFavorited, err3 := videoDaoInstance.QueryTotalFavoriteCountByUserId(users[i].Id)
-		if err3 != nil {
-			return nil, err3
+		var totalFavorited = int64(0)
+		if count, err4 := videoDaoInstance.QueryPublishCountByUserId(users[i].Id); err4 != nil {
+			return nil, err4
+		} else if count > 0 {
+			totalFavorited, err = videoDaoInstance.QueryTotalFavoriteCountByUserId(users[i].Id)
+		}
+		if err != nil {
+			return nil, err
 		}
 		isFollow, err4 := relationDaoInstance.QueryIsFollowByUserIdAndToUserId(loginUserId, users[i].Id)
 		if err4 != nil {

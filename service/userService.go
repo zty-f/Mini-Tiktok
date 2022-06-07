@@ -59,9 +59,14 @@ func (u *UserService) DoUserInfo(userId, loginUserId int64) (*common.UserVo, err
 	if err1 != nil {
 		return nil, err1
 	}
-	totalFavorited, err2 := videoDaoInstance.QueryTotalFavoriteCountByUserId(userId)
-	if err2 != nil {
-		return nil, err2
+	var totalFavorited = int64(0)
+	if count, err4 := videoDaoInstance.QueryPublishCountByUserId(userId); err4 != nil {
+		return nil, err4
+	} else if count > 0 {
+		totalFavorited, err = videoDaoInstance.QueryTotalFavoriteCountByUserId(userId)
+	}
+	if err != nil {
+		return nil, err
 	}
 	isFollow, err3 := relationDaoInstance.QueryIsFollowByUserIdAndToUserId(loginUserId, userId)
 	if err3 != nil {
