@@ -30,13 +30,17 @@ func (c *CommentDao) CreateComment(userId, videoId int64, commentText string) (i
 		VideoID: videoId,
 		Content: commentText,
 	}
-	if err := db.Select("user_id", "video_id", "content").Create(&comment).Error; err != nil {
+	tx := db.Begin()
+	if err := tx.Select("user_id", "video_id", "content").Create(&comment).Error; err != nil {
+		tx.Rollback()
 		return comment.ID, err
 	}
 	// 对应视频评论数+1
-	if err := db.Model(video).Where("id = ? ", videoId).Update("comment_count", gorm.Expr("comment_count+ ?", 1)).Error; err != nil {
+	if err := tx.Model(video).Where("id = ? ", videoId).Update("comment_count", gorm.Expr("comment_count+ ?", 1)).Error; err != nil {
+		tx.Rollback()
 		return comment.ID, err
 	}
+	tx.Commit()
 	// 返回comment对象只包含传入字段以及主键id
 	return comment.ID, nil
 }
@@ -45,14 +49,18 @@ func (c *CommentDao) CreateComment(userId, videoId int64, commentText string) (i
 func (c *CommentDao) DeleteComment(commentId, videoId int64) error {
 	video := &Video{}
 	comment := &Comment{}
-	err := db.Delete(comment, commentId).Error
+	tx := db.Begin()
+	err := tx.Delete(comment, commentId).Error
 	if err != nil {
+		tx.Rollback()
 		return err
 	}
 	// 对应视频评论数-1
 	if err1 := db.Model(video).Where("id = ? ", videoId).Update("comment_count", gorm.Expr("comment_count- ?", 1)).Error; err1 != nil {
+		tx.Rollback()
 		return err1
 	}
+	tx.Commit()
 	return nil
 }
 
