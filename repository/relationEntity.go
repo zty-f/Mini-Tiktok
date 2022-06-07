@@ -26,17 +26,22 @@ func (r *RelationDao) CreateRelation(userId, toUserId int64) error {
 		UserID:      userId,
 		FollowingID: toUserId,
 	}
-	if err := db.Select("user_id", "following_id").Create(&relation).Error; err != nil {
+	tx := db.Begin()
+	if err := tx.Select("user_id", "following_id").Create(&relation).Error; err != nil {
+		tx.Rollback()
 		return err
 	}
 	// 对应用户粉丝数+1
-	if err := db.Model(user).Where("id = ? ", toUserId).Update("follower_count", gorm.Expr("follower_count+ ?", 1)).Error; err != nil {
+	if err := tx.Model(user).Where("id = ? ", toUserId).Update("follower_count", gorm.Expr("follower_count+ ?", 1)).Error; err != nil {
+		tx.Rollback()
 		return err
 	}
 	// 对应用户关注数量+1
-	if err := db.Model(user).Where("id = ? ", userId).Update("follow_count", gorm.Expr("follow_count+ ?", 1)).Error; err != nil {
+	if err := tx.Model(user).Where("id = ? ", userId).Update("follow_count", gorm.Expr("follow_count+ ?", 1)).Error; err != nil {
+		tx.Rollback()
 		return err
 	}
+	tx.Commit()
 	return nil
 }
 
@@ -47,17 +52,22 @@ func (r *RelationDao) DeleteRelation(userId, toUserId int64) error {
 		UserID:      userId,
 		FollowingID: toUserId,
 	}
-	if err := db.Where("user_id = ? and following_id = ?", userId, toUserId).Delete(relation).Error; err != nil {
+	tx := db.Begin()
+	if err := tx.Where("user_id = ? and following_id = ?", userId, toUserId).Delete(relation).Error; err != nil {
+		tx.Rollback()
 		return err
 	}
 	// 对应用户粉丝数-1
-	if err := db.Model(user).Where("id = ? ", toUserId).Update("follower_count", gorm.Expr("follower_count- ?", 1)).Error; err != nil {
+	if err := tx.Model(user).Where("id = ? ", toUserId).Update("follower_count", gorm.Expr("follower_count- ?", 1)).Error; err != nil {
+		tx.Rollback()
 		return err
 	}
 	// 对应用户关注数量-1
-	if err := db.Model(user).Where("id = ? ", userId).Update("follow_count", gorm.Expr("follow_count- ?", 1)).Error; err != nil {
+	if err := tx.Model(user).Where("id = ? ", userId).Update("follow_count", gorm.Expr("follow_count- ?", 1)).Error; err != nil {
+		tx.Rollback()
 		return err
 	}
+	tx.Commit()
 	return nil
 }
 
