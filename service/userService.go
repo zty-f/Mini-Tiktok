@@ -3,9 +3,9 @@ package service
 import (
 	"errors"
 	"fmt"
+	uuid "github.com/satori/go.uuid"
 	"github.com/zty-f/Mini-Tiktok/common"
 	"github.com/zty-f/Mini-Tiktok/repository"
-	"strings"
 )
 
 type UserService struct {
@@ -32,9 +32,9 @@ func (u *UserService) DoRegister(userName, password string) (int64, string, erro
 	if err != nil {
 		return 0, "", err
 	}
-	var tokenSb strings.Builder
-	fmt.Fprintf(&tokenSb, "%s%s", userName, password)
-	return user.Id, tokenSb.String(), nil
+	// 因为用户名和密码拼接构成token也有可能构成重复，所以使用uuid生成唯一token
+	token := uuid.NewV4()
+	return user.Id, token.String(), nil
 }
 
 // DoLogin 登录
@@ -44,9 +44,9 @@ func (u *UserService) DoLogin(userName, password string) (*repository.User, stri
 		return nil, "", err
 	}
 	fmt.Printf("用户正在登录：" + userName + ":" + password)
-	var tokenSb strings.Builder
-	fmt.Fprintf(&tokenSb, "%s%s", userName, password)
-	return user, tokenSb.String(), nil
+	// 因为用户名和密码拼接构成token也有可能构成重复，所以使用uuid生成唯一token
+	token := uuid.NewV4()
+	return user, token.String(), nil
 }
 
 // DoUserInfo 获取用户信息
