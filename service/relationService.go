@@ -13,22 +13,20 @@ func NewRelationServiceInstance() *RelationService {
 	return &RelationService{}
 }
 
-// DoAddRelationAction 关注
-func (r *RelationService) DoAddRelationAction(userId, toUserId int64) error {
-	// 关注
-	err := relationDaoInstance.CreateRelation(userId, toUserId)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-// DoDelRelationAction 取消关注
-func (r *RelationService) DoDelRelationAction(userId, toUserId int64) error {
-	// 取消关注
-	err := relationDaoInstance.DeleteRelation(userId, toUserId)
-	if err != nil {
-		return err
+// DoRelationAction 关注
+func (r *RelationService) DoRelationAction(userId, toUserId, actionType int64) error {
+	if actionType == 1 {
+		// 关注
+		err := relationDaoInstance.CreateRelation(userId, toUserId)
+		if err != nil {
+			return err
+		}
+	} else {
+		// 取消关注
+		err := relationDaoInstance.DeleteRelation(userId, toUserId)
+		if err != nil {
+			return err
+		}
 	}
 	return nil
 }

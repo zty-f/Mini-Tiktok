@@ -25,35 +25,19 @@ func RelationAction(c *gin.Context) {
 		return
 	}
 	userId := OnlineUser[token].Id
-	if actionType == 1 {
-		// 调用service层
-		err := relationService.DoAddRelationAction(userId, toUserId)
-		if err != nil {
-			c.JSON(http.StatusOK, common.Response{
-				StatusCode: 1,
-				StatusMsg:  "服务端错误，关注失败！",
-			})
-			return
-		}
+	// 调用service层
+	err := relationService.DoRelationAction(userId, toUserId, actionType)
+	if err != nil {
 		c.JSON(http.StatusOK, common.Response{
-			StatusCode: 0,
-			StatusMsg:  "关注成功！",
+			StatusCode: 1,
+			StatusMsg:  "服务端错误，修改关注状态失败！",
 		})
-	} else {
-		// 调用service层
-		err := relationService.DoDelRelationAction(userId, toUserId)
-		if err != nil {
-			c.JSON(http.StatusOK, common.Response{
-				StatusCode: 1,
-				StatusMsg:  "服务端错误，取消关注失败！",
-			})
-			return
-		}
-		c.JSON(http.StatusOK, common.Response{
-			StatusCode: 0,
-			StatusMsg:  "取消关注成功！",
-		})
+		return
 	}
+	c.JSON(http.StatusOK, common.Response{
+		StatusCode: 0,
+		StatusMsg:  "修改关注状态成功！",
+	})
 	return
 }
 
