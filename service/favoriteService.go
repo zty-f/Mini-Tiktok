@@ -17,9 +17,20 @@ func NewFavoriteServiceInstance() *FavoriteService {
 // DoFavoriteAction 点赞
 func (f *FavoriteService) DoFavoriteAction(userId, videoId int64, actionType int32) error {
 	fmt.Printf("点赞userId：%d==videoId：%d==actionType:%d\n", userId, videoId, actionType)
-	err := favoriteDaoInstance.ActionOfLike(userId, videoId, actionType)
+	flag, err := favoriteDaoInstance.QueryFavoriteByUserIdAndVideoId(userId, videoId)
 	if err != nil {
 		return err
+	}
+	if flag {
+		err = favoriteDaoInstance.UpdateFavorite(userId, videoId, actionType)
+		if err != nil {
+			return err
+		}
+	} else {
+		err = favoriteDaoInstance.CreateFavorite(userId, videoId, actionType)
+		if err != nil {
+			return err
+		}
 	}
 	return nil
 }

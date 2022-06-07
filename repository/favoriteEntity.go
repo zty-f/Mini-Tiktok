@@ -1,7 +1,6 @@
 package repository
 
 import (
-	"errors"
 	"fmt"
 	"gorm.io/gorm"
 )
@@ -21,36 +20,66 @@ func NewFavoriteDaoInstance() *FavoriteDao {
 	return &FavoriteDao{}
 }
 
-// ActionOfLike 通过传入的参数完成点赞操作，更新数据库表（视频点赞数修改、点赞表修改）
-func (f *FavoriteDao) ActionOfLike(userId int64, videoId int64, actionType int32) error {
+// QueryFavoriteByUserIdAndVideoId 查询是否包含对应点赞关联记录
+func (f *FavoriteDao) QueryFavoriteByUserIdAndVideoId(userId int64, videoId int64) (bool, error) {
+	var count int64
+	if err := db.Table("favorites").Where("user_id = ? and video_id = ?", userId, videoId).Count(&count).Error; err != nil {
+		return false, err
+	}
+	return count > 0, nil
+}
+
+// CreateFavorite 创建点赞关联记录
+func (f *FavoriteDao) CreateFavorite(userId int64, videoId int64, actionType int32) error {
 	video := &Video{}
 	favorite := &Favorite{
 		UserID:     userId,
 		VideoID:    videoId,
 		IsFavorite: actionType,
 	}
-	// 点赞列表新增数据或修改标志位
-	if err := db.Where("user_id = ? and video_id = ?", userId, videoId).First(favorite).Error; errors.Is(err, gorm.ErrRecordNotFound) {
-		fmt.Println("数据库不包含这个点赞数据，需要创建·····")
-		//添加数据
-		db.Select("user_id", "video_id", "is_favorite").Create(favorite)
-	} else if err != nil {
+	tx := db.Begin()
+	//添加数据
+	if err := tx.Select("user_id", "video_id", "is_favorite").Create(favorite).Error; err != nil {
+		tx.Rollback()
 		return err
-	} else {
-		fmt.Println("更新点赞标志位······")
-		//更新标志位
-		db.Model(favorite).Update("is_favorite", actionType)
+	}
+	// 点赞视频的点赞数+1
+	if err := tx.Model(video).Where("id = ? ", videoId).Update("favorite_count", gorm.Expr("favorite_count+ ?", 1)).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+	tx.Commit()
+	return nil
+}
+
+// UpdateFavorite 更新点赞关联记录
+func (f *FavoriteDao) UpdateFavorite(userId int64, videoId int64, actionType int32) error {
+	video := &Video{}
+	favorite := &Favorite{
+		UserID:     userId,
+		VideoID:    videoId,
+		IsFavorite: actionType,
+	}
+	fmt.Println("更新点赞标志位······")
+	tx := db.Begin()
+	//更新标志位
+	if err := tx.Model(favorite).Where("user_id = ? and video_id = ?", userId, videoId).Update("is_favorite", actionType).Error; err != nil {
+		tx.Rollback()
+		return err
 	}
 	if actionType == 1 {
 		// 点赞视频的点赞数+1
-		if err := db.Model(video).Where("id = ? ", videoId).Update("favorite_count", gorm.Expr("favorite_count+ ?", 1)).Error; err != nil {
+		if err := tx.Model(video).Where("id = ? ", videoId).Update("favorite_count", gorm.Expr("favorite_count+ ?", 1)).Error; err != nil {
+			tx.Rollback()
 			return err
 		}
 	} else {
-		if err := db.Model(video).Where("id = ? ", videoId).Update("favorite_count", gorm.Expr("favorite_count- ?", 1)).Error; err != nil {
+		if err := tx.Model(video).Where("id = ? ", videoId).Update("favorite_count", gorm.Expr("favorite_count- ?", 1)).Error; err != nil {
+			tx.Rollback()
 			return err
 		}
 	}
+	tx.Commit()
 	return nil
 }
 
