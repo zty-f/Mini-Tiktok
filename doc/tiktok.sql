@@ -24,8 +24,6 @@ CREATE TABLE `videos`
     `create_time`    datetime(0) NOT NULL DEFAULT CURRENT_TIMESTAMP (0),
     PRIMARY KEY (`id`)
 )
-ALTER TABLE `tiktok`.`favorites`
-    ADD UNIQUE INDEX `user_video`(`user_id`, `video_id`) USING BTREE COMMENT 'user_id+video_id的唯一索引';
 
 -- 评论表
 CREATE TABLE `comments`
@@ -47,6 +45,8 @@ CREATE TABLE `favorites`
     `is_favorite` tinyint(0) NULL DEFAULT 0,
     PRIMARY KEY (`id`)
 )
+ALTER TABLE `tiktok`.`favorites`
+    ADD UNIQUE INDEX `user_video`(`user_id`, `video_id`) USING BTREE COMMENT 'user_id+video_id的唯一索引';
 
 -- 关注表
 CREATE TABLE `relations`
