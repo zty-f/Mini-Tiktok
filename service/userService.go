@@ -6,6 +6,7 @@ import (
 	uuid "github.com/satori/go.uuid"
 	"github.com/zty-f/Mini-Tiktok/common"
 	"github.com/zty-f/Mini-Tiktok/repository"
+	"github.com/zty-f/Mini-Tiktok/utils"
 	"strings"
 )
 
@@ -35,6 +36,7 @@ func (u *UserService) DoRegister(userName, password string) (int64, string, erro
 	if flag {
 		return 0, "", errors.New("用户名已存在，请创建一个独一无二的name吧！")
 	}
+	password = utils.MD5(password)
 	//调用Dao层
 	user, err := userDaoInstance.CreateByNameAndPassword(userName, password)
 	if err != nil {
@@ -61,7 +63,7 @@ func (u *UserService) DoLogin(userName, password string) (*repository.User, stri
 	if err != nil {
 		return nil, "", err
 	}
-	if !strings.EqualFold(password, user.Password) {
+	if !strings.EqualFold(utils.MD5(password), user.Password) {
 		fmt.Println("密码错误！")
 		return nil, "", errors.New("用户名或者密码错误！")
 	}

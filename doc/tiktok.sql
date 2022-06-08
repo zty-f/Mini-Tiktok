@@ -3,7 +3,7 @@ CREATE TABLE `users`
 (
     `id`             bigint(0) NOT NULL AUTO_INCREMENT COMMENT 'PK',
     `name`           varchar(32)  NOT NULL,
-    `password`       varchar(32)  NULL DEFAULT NULL,
+    `password`       varchar(200)  NULL DEFAULT NULL,
     `follow_count`   bigint(0)  NULL DEFAULT 0,
     `follower_count` bigint(0)  NULL DEFAULT 0,
     PRIMARY KEY (`id`)
