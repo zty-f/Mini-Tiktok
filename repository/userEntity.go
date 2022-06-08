@@ -1,5 +1,7 @@
 package repository
 
+import "errors"
+
 type User struct {
 	Id            int64  `gorm:"primary_key"`
 	Name          string `gorm:"column:name;size:32;not null"`
@@ -33,6 +35,13 @@ func (u *UserDao) CreateByNameAndPassword(name, password string) (*User, error) 
 		Password:      password,
 		FollowCount:   0,
 		FollowerCount: 0,
+	}
+	var count int64
+	if err := db.Table("users").Where("name = ?", name).Count(&count).Error; err != nil {
+		return nil, err
+	}
+	if count > 0 {
+		return nil, errors.New("用户名已存在，请创建一个独一无二的name吧！")
 	}
 	if err := db.Create(user).Error; err != nil {
 		return nil, err
