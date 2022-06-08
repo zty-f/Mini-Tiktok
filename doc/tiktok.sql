@@ -35,6 +35,8 @@ CREATE TABLE `comments`
     `create_time`    datetime(0) NOT NULL DEFAULT CURRENT_TIMESTAMP (0),
     PRIMARY KEY (`id`)
 )
+ALTER TABLE `tiktok`.`comments`
+    ADD INDEX `videoId`(`video_id`) USING BTREE COMMENT 'videoId的普通索引';
 
 -- 点赞表
 CREATE TABLE `favorites`
@@ -56,5 +58,3 @@ CREATE TABLE `relations`
     `following_id` bigint(0) NULL DEFAULT 0,
     PRIMARY KEY (`id`)
 )
-ALTER TABLE `tiktok`.`relations`
-    ADD UNIQUE INDEX `user_follow`(`user_id`, `following_id`) USING BTREE COMMENT '关注着和被关注者的id构成唯一索引';
