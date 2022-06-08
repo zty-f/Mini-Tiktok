@@ -1,7 +1,5 @@
 package repository
 
-import "errors"
-
 type User struct {
 	Id            int64  `gorm:"primary_key"`
 	Name          string `gorm:"column:name;size:32;not null"`
@@ -36,23 +34,28 @@ func (u *UserDao) CreateByNameAndPassword(name, password string) (*User, error) 
 		FollowCount:   0,
 		FollowerCount: 0,
 	}
-	var count int64
-	if err := db.Table("users").Where("name = ?", name).Count(&count).Error; err != nil {
-		return nil, err
-	}
-	if count > 0 {
-		return nil, errors.New("用户名已存在，请创建一个独一无二的name吧！")
-	}
 	if err := db.Create(user).Error; err != nil {
 		return nil, err
 	}
 	return user, nil
 }
 
-// QueryLoginInfo 通过用户名和密码查询是否包含此用户
-func (u *UserDao) QueryLoginInfo(name string, password string) (*User, error) {
+// QueryIsContainsUserName 查询用户名是否存在
+func (u *UserDao) QueryIsContainsUserName(name string) (bool, error) {
+	var count int64
+	if err := db.Table("users").Where("name = ?", name).Count(&count).Error; err != nil {
+		return false, err
+	}
+	if count > 0 {
+		return true, nil
+	}
+	return false, nil
+}
+
+// QueryLoginInfo 通过用户名查询此用户信息
+func (u *UserDao) QueryLoginInfo(name string) (*User, error) {
 	var user = &User{}
-	if err := db.Where("name = ? and password = ?", name, password).Find(user).Error; err != nil {
+	if err := db.Where("name = ?", name).Find(user).Error; err != nil {
 		return nil, err
 	}
 	return user, nil

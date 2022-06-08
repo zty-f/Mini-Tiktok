@@ -6,6 +6,7 @@ import (
 	uuid "github.com/satori/go.uuid"
 	"github.com/zty-f/Mini-Tiktok/common"
 	"github.com/zty-f/Mini-Tiktok/repository"
+	"strings"
 )
 
 type UserService struct {
@@ -27,6 +28,13 @@ func (u *UserService) DoRegister(userName, password string) (int64, string, erro
 	if pErr != nil {
 		return 0, "", pErr
 	}
+	flag, err1 := userDaoInstance.QueryIsContainsUserName(userName)
+	if err1 != nil {
+		return 0, "", err1
+	}
+	if flag {
+		return 0, "", errors.New("用户名已存在，请创建一个独一无二的name吧！")
+	}
 	//调用Dao层
 	user, err := userDaoInstance.CreateByNameAndPassword(userName, password)
 	if err != nil {
@@ -39,9 +47,23 @@ func (u *UserService) DoRegister(userName, password string) (int64, string, erro
 
 // DoLogin 登录
 func (u *UserService) DoLogin(userName, password string) (*repository.User, string, error) {
-	user, err := userDaoInstance.QueryLoginInfo(userName, password)
+	flag, err1 := userDaoInstance.QueryIsContainsUserName(userName)
+	if err1 != nil {
+		return nil, "", err1
+	}
+	if !flag {
+		fmt.Println("用户名重复！")
+		return nil, "", errors.New("用户名或者密码错误！")
+	}
+	user, err := userDaoInstance.QueryLoginInfo(userName)
+	fmt.Println(user.Id)
+	fmt.Println(user.Password)
 	if err != nil {
 		return nil, "", err
+	}
+	if !strings.EqualFold(password, user.Password) {
+		fmt.Println("密码错误！")
+		return nil, "", errors.New("用户名或者密码错误！")
 	}
 	fmt.Printf("用户正在登录：" + userName + ":" + password)
 	// 因为用户名和密码拼接构成token也有可能构成重复，所以使用uuid生成唯一token

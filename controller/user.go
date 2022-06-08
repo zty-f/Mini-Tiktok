@@ -47,10 +47,10 @@ func Login(c *gin.Context) {
 	password := c.Query("password")
 	//调用service层
 	user, token, err := userService.DoLogin(userName, password)
-	if user.Id <= 0 || err != nil {
+	if err != nil {
 		c.JSON(http.StatusOK, RegisterResp{
 			Response: common.Response{StatusCode: 1,
-				StatusMsg: "用户名或密码错误！"},
+				StatusMsg: err.Error()},
 		})
 		return
 	}
