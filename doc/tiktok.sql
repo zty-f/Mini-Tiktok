@@ -58,3 +58,5 @@ CREATE TABLE `relations`
     `following_id` bigint(0) NULL DEFAULT 0,
     PRIMARY KEY (`id`)
 )
+ALTER TABLE `tiktok`.`relations`
+    ADD UNIQUE INDEX `user_follow`(`user_id`, `following_id`) USING BTREE COMMENT '关注着和被关注者的id构成唯一索引';
