@@ -59,11 +59,11 @@ func CommentAction(c *gin.Context) {
 			return
 		}
 		//调用service层
-		err5 := commentService.DoDelCommentAction(videoId, commentId)
+		err5 := commentService.DoDelCommentAction(userId, videoId, commentId)
 		if err5 != nil {
 			c.JSON(http.StatusOK, common.Response{
 				StatusCode: 1,
-				StatusMsg:  "服务端错误，删除评论失败！",
+				StatusMsg:  err5.Error(),
 			})
 			return
 		}

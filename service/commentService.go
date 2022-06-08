@@ -53,7 +53,14 @@ func (c *CommentService) DoAddCommentAction(loginUserId, videoId int64, commentT
 }
 
 // DoDelCommentAction 删除评论功能
-func (c *CommentService) DoDelCommentAction(videoId, commentId int64) error {
+func (c *CommentService) DoDelCommentAction(loginUserId, videoId, commentId int64) error {
+	comment, err4 := commentDaoInstance.QueryCommentById(commentId)
+	if err4 != nil {
+		return err4
+	}
+	if comment.UserID != loginUserId {
+		return errors.New("不能删除他人的评论，谢谢！")
+	}
 	//删除评论
 	err := commentDaoInstance.DeleteComment(commentId, videoId)
 	if err != nil {
