@@ -8,6 +8,9 @@ CREATE TABLE `users`
     `follower_count` bigint(0)  NULL DEFAULT 0,
     PRIMARY KEY (`id`)
 )
+ALTER TABLE `tiktok`.`users`
+    ADD UNIQUE INDEX `name&password`(`name`, `password`) USING BTREE COMMENT 'name+password的唯一组合索引';
+
 -- 视频表
 CREATE TABLE `videos`
 (
