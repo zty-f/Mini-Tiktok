@@ -1,7 +1,7 @@
 package db2gorm
 
 import (
-	"github.com/zty-f/Mini-Tiktok/util/db2gorm/gen"
+	"github.com/zty-f/Mini-Tiktok/utils/db2gorm/gen"
 )
 
 func generateOne() {

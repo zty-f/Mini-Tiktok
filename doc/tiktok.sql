@@ -6,6 +6,9 @@ CREATE TABLE `users`
     `password`       varchar(200)  NULL DEFAULT NULL,
     `follow_count`   bigint(0)  NULL DEFAULT 0,
     `follower_count` bigint(0)  NULL DEFAULT 0,
+    `avatar` varchar(255) DEFAULT NULL COMMENT '头像链接',
+    `signature` varchar(255) DEFAULT NULL COMMENT '签名',
+    `background_image` varchar(255) DEFAULT NULL COMMENT '背景图',
     PRIMARY KEY (`id`)
 )
 ALTER TABLE `tiktok`.`users`

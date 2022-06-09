@@ -2,7 +2,7 @@ package gen
 
 import (
 	"fmt"
-	"github.com/zty-f/Mini-Tiktok/util/db2gorm/util"
+	"github.com/zty-f/Mini-Tiktok/utils/db2gorm/util"
 	"gorm.io/gorm"
 	"regexp"
 	"strings"

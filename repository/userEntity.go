@@ -1,11 +1,14 @@
 package repository
 
 type User struct {
-	Id            int64  `gorm:"primary_key"`
-	Name          string `gorm:"column:name;size:32;not null"`
-	Password      string `gorm:"column:password;size:32;"`
-	FollowCount   int64  `gorm:"column:follow_count"`
-	FollowerCount int64  `gorm:"column:follower_count"`
+	Id              int64  `gorm:"primary_key"`
+	Name            string `gorm:"column:name;size:32;not null"`
+	Password        string `gorm:"column:password;size:32;"`
+	FollowCount     int64  `gorm:"column:follow_count"`
+	FollowerCount   int64  `gorm:"column:follower_count"`
+	Avatar          string
+	Signature       string
+	BackgroundImage string
 }
 
 type UserDao struct {

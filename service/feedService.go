@@ -60,9 +60,9 @@ func (f *FeedService) DoFeed(loginUserId int64, latestTime string) ([]common.Vid
 			FollowCount:     user.FollowCount,
 			FollowerCount:   user.FollowerCount,
 			IsFollow:        isFollow,
-			Avatar:          "https://s3.bmp.ovh/imgs/2022/05/04/345d42da2a13020b.jpg",
-			Signature:       "冲冲冲，就快要做完了！",
-			BackgroundImage: "https://s3.bmp.ovh/imgs/2022/05/04/29ccf3f609f3e5f2.jpg",
+			Avatar:          user.Avatar,
+			Signature:       user.Signature,
+			BackgroundImage: user.BackgroundImage,
 			TotalFavorited:  totalFavorited,
 			FavoriteCount:   favoriteCount,
 		}
