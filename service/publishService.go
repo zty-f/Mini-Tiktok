@@ -14,7 +14,7 @@ import (
 )
 
 // ResourceBase 如果映射的域名和改了，需要更改这个配置
-const ResourceBase = "http://192.168.0.101:8080/static/"
+const ResourceBase = "http://47.108.239.8:8085/static/"
 
 type PublishService struct {
 }

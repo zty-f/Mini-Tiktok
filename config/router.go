@@ -1,12 +1,11 @@
-package main
+package config
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/zty-f/Mini-Tiktok/config"
 	"github.com/zty-f/Mini-Tiktok/controller"
 )
 
-func initRouter(r *gin.Engine) {
+func InitRouter(r *gin.Engine) {
 	r.Static("/static", "./public")
 
 	//不用拦截的接口组
@@ -23,7 +22,7 @@ func initRouter(r *gin.Engine) {
 	//需要拦截的接口组
 	apiRouter2 := r.Group("/douyin")
 	//配置拦截器
-	apiRouter2.Use(config.CheckToken)
+	apiRouter2.Use(CheckToken)
 
 	apiRouter2.GET("/user/", controller.UserInfo)
 	apiRouter2.POST("/favorite/action/", controller.FavoriteAction)
