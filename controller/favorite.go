@@ -53,7 +53,12 @@ func FavoriteList(c *gin.Context) {
 		})
 		return
 	}
-	loginUserId := OnlineUser[token].Id
+	var loginUserId int64
+	if len(token) == 0 {
+		loginUserId = 0
+	} else {
+		loginUserId = OnlineUser[token].Id
+	}
 	//调用service层
 	videoListResp, err := favoriteService.DoFavoriteList(userId, loginUserId)
 	if err != nil {

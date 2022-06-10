@@ -54,7 +54,12 @@ func PublishList(c *gin.Context) {
 		})
 		return
 	}
-	loginUserId := OnlineUser[token].Id
+	var loginUserId int64
+	if len(token) == 0 {
+		loginUserId = 0
+	} else {
+		loginUserId = OnlineUser[token].Id
+	}
 	//调用service层
 	PublishedList, err1 := publishService.DoPublishList(userId, loginUserId)
 	if err1 != nil {

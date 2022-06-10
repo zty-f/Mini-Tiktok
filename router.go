@@ -9,23 +9,26 @@ import (
 func initRouter(r *gin.Engine) {
 	r.Static("/static", "./public")
 
-	// 不用拦截的接口
-	r.GET("/douyin/feed/", controller.Feed)
-	r.POST("/douyin/user/register/", controller.Register)
-	r.POST("/douyin/user/login/", controller.Login)
-	r.POST("/douyin/publish/action/", controller.PublishVideo)
-	r.GET("/douyin/comment/list/", controller.CommentList)
+	//不用拦截的接口组
+	apiRouter1 := r.Group("/douyin")
 
-	apiRouter := r.Group("/douyin")
+	apiRouter1.GET("/feed/", controller.Feed)
+	apiRouter1.POST("/user/register/", controller.Register)
+	apiRouter1.POST("/user/login/", controller.Login)
+	apiRouter1.POST("/publish/action/", controller.PublishVideo)
+	apiRouter1.GET("/comment/list/", controller.CommentList)
+	apiRouter1.GET("/favorite/list/", controller.FavoriteList)
+	apiRouter1.GET("/publish/list/", controller.PublishList)
+
+	//需要拦截的接口组
+	apiRouter2 := r.Group("/douyin")
 	//配置拦截器
-	apiRouter.Use(config.CheckToken)
+	apiRouter2.Use(config.CheckToken)
 
-	apiRouter.GET("/user/", controller.UserInfo)
-	apiRouter.GET("/publish/list/", controller.PublishList)
-	apiRouter.POST("/favorite/action/", controller.FavoriteAction)
-	apiRouter.GET("/favorite/list/", controller.FavoriteList)
-	apiRouter.POST("/comment/action/", controller.CommentAction)
-	apiRouter.POST("/relation/action/", controller.RelationAction)
-	apiRouter.GET("/relation/follow/list/", controller.RelationFollowList)
-	apiRouter.GET("/relation/follower/list/", controller.RelationFollowerList)
+	apiRouter2.GET("/user/", controller.UserInfo)
+	apiRouter2.POST("/favorite/action/", controller.FavoriteAction)
+	apiRouter2.POST("/comment/action/", controller.CommentAction)
+	apiRouter2.POST("/relation/action/", controller.RelationAction)
+	apiRouter2.GET("/relation/follow/list/", controller.RelationFollowList)
+	apiRouter2.GET("/relation/follower/list/", controller.RelationFollowerList)
 }
