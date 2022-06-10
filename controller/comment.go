@@ -83,7 +83,12 @@ func CommentList(c *gin.Context) {
 		return
 	}
 	token := c.Query("token")
-	loginUserId := OnlineUser[token].Id
+	var loginUserId int64
+	if len(token) == 0 {
+		loginUserId = 0
+	} else {
+		loginUserId = OnlineUser[token].Id
+	}
 	//调用service层
 	commentList, err := commentService.DoCommentList(loginUserId, videoId)
 	if err != nil {

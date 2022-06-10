@@ -14,6 +14,7 @@ func initRouter(r *gin.Engine) {
 	r.POST("/douyin/user/register/", controller.Register)
 	r.POST("/douyin/user/login/", controller.Login)
 	r.POST("/douyin/publish/action/", controller.PublishVideo)
+	r.GET("/douyin/comment/list/", controller.CommentList)
 
 	apiRouter := r.Group("/douyin")
 	//配置拦截器
@@ -24,7 +25,6 @@ func initRouter(r *gin.Engine) {
 	apiRouter.POST("/favorite/action/", controller.FavoriteAction)
 	apiRouter.GET("/favorite/list/", controller.FavoriteList)
 	apiRouter.POST("/comment/action/", controller.CommentAction)
-	apiRouter.GET("/comment/list/", controller.CommentList)
 	apiRouter.POST("/relation/action/", controller.RelationAction)
 	apiRouter.GET("/relation/follow/list/", controller.RelationFollowList)
 	apiRouter.GET("/relation/follower/list/", controller.RelationFollowerList)
