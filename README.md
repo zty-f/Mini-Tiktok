@@ -1,6 +1,9 @@
 # Mini-Tiktok
 bytedance camp project
 
+## 完整项目文档地址
+https://swpu.feishu.cn/docx/doxcnkATUqzQE9h8d9ZFNxkyWZf
+
 ### 数据库设计文档在项目的doc文件夹下！！！！！
 
 ### **2022.6.2**
