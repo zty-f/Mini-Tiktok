@@ -2,7 +2,7 @@
 bytedance camp project
 
 ## 完整项目文档地址
-https://swpu.feishu.cn/docx/doxcnkATUqzQE9h8d9ZFNxkyWZf
+https://jnwedld8az.feishu.cn/docx/L5DAdUECyoy5fgxDpy0cBTZ7nsc
 
 ### 数据库设计文档在项目的doc文件夹下！！！！！
 
